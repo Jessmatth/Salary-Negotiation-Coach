@@ -180,11 +180,11 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {(recentRecords || []).map((record: any) => (
+                {(recentRecords || []).filter((record: any) => record.jobTitle).map((record: any) => (
                   <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg bg-card/50 hover:bg-secondary/50 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                        {record.jobTitle.charAt(0)}
+                        {record.jobTitle?.charAt(0) || "?"}
                       </div>
                       <div>
                         <h4 className="font-medium text-sm">{record.jobTitle}</h4>
