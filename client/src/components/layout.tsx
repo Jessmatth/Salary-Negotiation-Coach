@@ -7,7 +7,8 @@ import {
   Menu, 
   Bell, 
   Search,
-  User
+  User,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/" },
   { icon: Calculator, label: "Benchmark Tool", href: "/benchmarks" },
   { icon: Database, label: "Dataset Explorer", href: "/dataset" },
+  { icon: FileText, label: "Methodology", href: "/methodology" },
   // { icon: Settings, label: "Settings", href: "/settings" },
 ];
 

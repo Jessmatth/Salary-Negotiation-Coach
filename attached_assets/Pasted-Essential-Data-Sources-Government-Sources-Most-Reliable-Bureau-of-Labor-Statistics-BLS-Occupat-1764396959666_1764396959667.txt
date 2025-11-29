@@ -1,0 +1,151 @@
+Essential Data Sources
+Government Sources (Most Reliable)
+
+Bureau of Labor Statistics (BLS): Occupational Employment and Wage Statistics (OEWS) provides detailed wage data by occupation, industry, and location
+O*NET Database: Links to BLS data with detailed job descriptions and skill requirements
+Census Bureau: American Community Survey (ACS) provides demographic salary data
+H1B Salary Database: Department of Labor's foreign labor certification data shows actual salaries paid
+
+Commercial & Crowdsourced Data
+
+Glassdoor API: Self-reported salaries with company specifics
+Levels.fyi: Tech-focused compensation including equity
+Payscale: Comprehensive salary profiles
+Indeed/LinkedIn Salary Insights: Job posting salary ranges (increasingly available due to pay transparency laws)
+
+Core Dataset Structure
+Your dataset should include these key fields:
+Job Information
+
+Job title (standardized)
+SOC code (Standard Occupational Classification)
+Industry (NAICS code)
+Company size (ranges: 1-50, 51-200, 201-1000, 1000+)
+Company type (public/private/nonprofit/government)
+
+Compensation Data
+
+Base salary (min, max, median, 25th/75th percentile)
+Total compensation (including bonuses, equity)
+Hourly vs. salary designation
+Currency and year of data
+
+Location Variables
+
+State
+Metropolitan Statistical Area (MSA)
+Cost of living index
+Remote work eligibility
+
+Experience & Skills
+
+Years of experience required
+Education level
+Key skills/certifications
+Management level (IC, Manager, Director, VP, C-suite)
+
+Data Collection Strategy
+python# Example structure for your dataset
+salary_benchmark_schema = {
+    "record_id": "unique_identifier",
+    "job_title": "string",
+    "soc_code": "string",
+    "company_name": "string (anonymized if needed)",
+    "industry_naics": "string",
+    "location": {
+        "state": "string",
+        "msa": "string",
+        "cost_of_living_index": "float"
+    },
+    "compensation": {
+        "base_salary_min": "integer",
+        "base_salary_median": "integer",
+        "base_salary_max": "integer",
+        "total_comp_median": "integer",
+        "currency": "USD",
+        "data_year": "integer"
+    },
+    "requirements": {
+        "min_years_experience": "integer",
+        "education_level": "string",
+        "skills": ["list", "of", "skills"]
+    },
+    "data_source": "string",
+    "confidence_score": "float (0-1)",
+    "sample_size": "integer",
+    "last_updated": "date"
+}
+Data Quality Considerations
+Validation Rules
+
+Remove outliers (salaries below minimum wage or above 99.5 percentile)
+Standardize job titles using O*NET taxonomy
+Normalize for inflation using CPI adjustments
+Account for regional cost of living differences
+
+Confidence Scoring
+Create a confidence score based on:
+
+Data source reliability (government = high, self-reported = medium)
+Sample size (more data points = higher confidence)
+Data recency (recent data scores higher)
+Completeness of information
+
+Implementation Recommendations
+Data Pipeline
+
+Collection: Set up automated scrapers/API calls for regular updates
+Cleaning: Standardize titles, remove duplicates, handle missing values
+Enrichment: Add cost of living adjustments, skill matching
+Validation: Cross-reference multiple sources for accuracy
+Storage: Use a database that supports efficient querying (PostgreSQL with proper indexing)
+
+Privacy & Legal Compliance
+
+Ensure compliance with data source terms of service
+Anonymize company-specific data where required
+Follow pay transparency law requirements by state
+Include appropriate disclaimers about data accuracy
+
+Benchmarking Algorithm Features
+Your coach should adjust salaries based on:
+
+Geographic location (cost of living multiplier)
+Years of experience (typically 3-5% per year early career, flattening later)
+Company size (larger companies often pay 10-20% more)
+Industry (tech/finance typically pay premiums)
+Remote vs. on-site (remote may be -5% to -15%)
+
+Sample Data Collection Script Structure
+pythondef build_salary_dataset():
+    # 1. Collect from multiple sources
+    bls_data = fetch_bls_data()
+    h1b_data = fetch_h1b_data()
+    glassdoor_data = fetch_glassdoor_api()
+    
+    # 2. Standardize format
+    normalized_data = normalize_salary_records(all_sources)
+    
+    # 3. Enhance with calculations
+    enhanced_data = add_percentiles(normalized_data)
+    enhanced_data = adjust_for_inflation(enhanced_data)
+    enhanced_data = add_cost_of_living(enhanced_data)
+    
+    # 4. Quality scoring
+    final_dataset = calculate_confidence_scores(enhanced_data)
+    
+    return final_dataset
+Key Success Factors
+For Accuracy:
+
+Combine multiple data sources to reduce bias
+Weight recent data more heavily (last 12-18 months)
+Account for total compensation, not just base salary
+Include sample size to indicate reliability
+
+For Usability:
+
+Provide salary ranges, not just point estimates
+Include contextual factors (company stage, benefits, equity)
+Show comparable titles for flexibility
+Enable filtering by multiple criteria simultaneously

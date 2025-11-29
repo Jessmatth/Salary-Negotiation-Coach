@@ -17,30 +17,28 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  LineChart,
-  Line
+  Cell
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function Dashboard() {
   const totalRecords = MOCK_DATA.length;
-  const avgSalary = MOCK_DATA.reduce((acc, curr) => acc + curr.compensation.median, 0) / totalRecords;
-  const totalRoles = new Set(MOCK_DATA.map(d => d.jobTitle)).size;
+  const avgSalary = MOCK_DATA.reduce((acc, curr) => acc + curr.compensation.base_salary_median, 0) / totalRecords;
+  const totalRoles = new Set(MOCK_DATA.map(d => d.job_info.title)).size;
 
   // Prepare chart data
   const industryData = MOCK_DATA.reduce((acc: any, curr) => {
-    acc[curr.industry] = (acc[curr.industry] || 0) + 1;
+    acc[curr.job_info.industry_naics] = (acc[curr.job_info.industry_naics] || 0) + 1;
     return acc;
   }, {});
   const pieData = Object.entries(industryData).map(([name, value]) => ({ name, value }));
 
   const salaryByRole = MOCK_DATA.reduce((acc: any, curr) => {
-    if (!acc[curr.jobTitle]) {
-      acc[curr.jobTitle] = { total: 0, count: 0 };
+    if (!acc[curr.job_info.title]) {
+      acc[curr.job_info.title] = { total: 0, count: 0 };
     }
-    acc[curr.jobTitle].total += curr.compensation.median;
-    acc[curr.jobTitle].count += 1;
+    acc[curr.job_info.title].total += curr.compensation.base_salary_median;
+    acc[curr.job_info.title].count += 1;
     return acc;
   }, {});
   
@@ -49,7 +47,7 @@ export default function Dashboard() {
     .sort((a, b) => b.salary - a.salary)
     .slice(0, 5);
 
-  const COLORS = ['#3b82f6', '#10b981', '#6366f1', '#f59e0b', '#ef4444'];
+  const COLORS = ['#3b82f6', '#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
   return (
     <Layout>
@@ -164,19 +162,19 @@ export default function Dashboard() {
           <CardContent>
             <div className="space-y-4">
               {MOCK_DATA.slice(0, 5).map((record) => (
-                <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg bg-card/50 hover:bg-secondary/50 transition-colors">
+                <div key={record.record_id} className="flex items-center justify-between p-4 border rounded-lg bg-card/50 hover:bg-secondary/50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {record.jobTitle.charAt(0)}
+                      {record.job_info.title.charAt(0)}
                     </div>
                     <div>
-                      <h4 className="font-medium text-sm">{record.jobTitle}</h4>
-                      <p className="text-xs text-muted-foreground">{record.industry} • {record.location.state}</p>
+                      <h4 className="font-medium text-sm">{record.job_info.title}</h4>
+                      <p className="text-xs text-muted-foreground">{record.job_info.industry_naics} • {record.location.state}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono font-medium text-sm">{formatCurrency(record.compensation.median)}</div>
-                    <div className="text-xs text-muted-foreground">{record.experience.level} Level</div>
+                    <div className="font-mono font-medium text-sm">{formatCurrency(record.compensation.base_salary_median)}</div>
+                    <div className="text-xs text-muted-foreground">{record.requirements.management_level} Level</div>
                   </div>
                 </div>
               ))}
