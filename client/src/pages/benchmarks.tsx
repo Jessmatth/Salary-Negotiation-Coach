@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { formatCurrency } from "@/lib/mockData";
+import { useBenchmarkCalculation } from "@/lib/api";
 import { Loader2, ArrowRight, CheckCircle2, Calculator } from "lucide-react";
 
 const formSchema = z.object({
@@ -22,7 +23,7 @@ const formSchema = z.object({
 
 export default function Benchmarks() {
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const benchmarkMutation = useBenchmarkCalculation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -36,23 +37,11 @@ export default function Benchmarks() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
-    // Simulate calculation latency
-    setTimeout(() => {
-      const base = 80000;
-      const randomFactor = 0.9 + Math.random() * 0.4;
-      const expFactor = 1 + (values.experience * 0.05);
-      const estimatedMedian = Math.round(base * randomFactor * expFactor);
-      
-      setResult({
-        min: estimatedMedian * 0.85,
-        max: estimatedMedian * 1.25,
-        median: estimatedMedian,
-        p25: estimatedMedian * 0.92,
-        p75: estimatedMedian * 1.15,
-      });
-      setLoading(false);
-    }, 1500);
+    benchmarkMutation.mutate(values, {
+      onSuccess: (data) => {
+        setResult(data);
+      },
+    });
   }
 
   return (
@@ -155,8 +144,8 @@ export default function Benchmarks() {
                     )}
                   />
 
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? (
+                  <Button type="submit" className="w-full" disabled={benchmarkMutation.isPending}>
+                    {benchmarkMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Calculating...
@@ -230,16 +219,20 @@ export default function Benchmarks() {
                         </h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                           <li className="flex justify-between">
-                            <span>Location Adjustment (SF)</span>
-                            <span className="text-emerald-600 font-medium">+18%</span>
+                            <span>Location Adjustment</span>
+                            <span className={result.factors.location >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
+                              {result.factors.location >= 0 ? "+" : ""}{result.factors.location}%
+                            </span>
                           </li>
                           <li className="flex justify-between">
-                            <span>Industry Premium (Tech)</span>
-                            <span className="text-emerald-600 font-medium">+12%</span>
+                            <span>Industry Premium</span>
+                            <span className={result.factors.industry >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
+                              {result.factors.industry >= 0 ? "+" : ""}{result.factors.industry}%
+                            </span>
                           </li>
                           <li className="flex justify-between">
-                            <span>Experience Level (Senior)</span>
-                            <span className="text-emerald-600 font-medium">+25%</span>
+                            <span>Experience Level</span>
+                            <span className="text-emerald-600 font-medium">+{result.factors.experience}%</span>
                           </li>
                         </ul>
                       </div>
