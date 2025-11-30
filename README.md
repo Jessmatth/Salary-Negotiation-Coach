@@ -4,7 +4,9 @@
 
 The Salary Negotiation Coach is a targeted application designed to empower job seekers by providing data-backed salary assessment and AI-generated, tone-adjusted negotiation scripts. Our core mission is to eliminate the anxiety and guesswork involved in responding to a job offer, ensuring users receive compensation commensurate with their market value.
 
-## Features
+## ✨ Key Features (MVP)
+
+The initial application focuses on three high-impact features that guide the user through the entire negotiation preparation process:
 
 ### Offer Scorecard
 Compare your salary offer against 45,000+ real market data points. See where your offer falls in the market (percentile position) and get insights on whether you're being offered a competitive package.
