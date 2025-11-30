@@ -12,7 +12,7 @@ The initial application focuses on three high-impact features that guide the use
 Compare your salary offer against 45,000+ real market data points. The user instantly sees the exact dollar difference between their offer and the median salary for their role and where your offer falls in the market.
 
 ### Leverage Quiz
-An 8-question assessment that calculates your negotiation power score (0-100). Based on factors like competing offers, market demand for your skills, and your current situation, you'll receive tactical recommendations on how hard to push.
+Determine the user's negotiation power to personalize the subsequent script and advice. An 8-question assessment calculates a 0-100 negotiation power score. The user receives tactical recommendations based on factors like competing offers, market demand, and current employment.
 
 ### Script Generator
 Get customizable negotiation email templates with adjustable tone (Polite, Professional, or Assertive). Edit and personalize the scripts to match your style before sending.
