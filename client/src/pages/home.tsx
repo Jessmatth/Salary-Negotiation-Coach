@@ -15,7 +15,7 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-xl text-white">SalaryCoach</span>
+            <span className="font-bold text-xl text-white">Salary Negotiation Coach</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/scorecard" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scorecard-nav">
@@ -165,7 +165,7 @@ export default function Home() {
 
       <footer className="border-t border-slate-800 py-8 mt-16">
         <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
-          SalaryCoach helps you negotiate with confidence. Data sourced from BLS and H1B databases.
+          Salary Negotiation Coach helps you negotiate with confidence. Data sourced from BLS and H1B databases.
         </div>
       </footer>
     </div>

@@ -1,4 +1,4 @@
-# SalaryCoach - Salary Negotiation Coach
+# Salary Negotiation Coach
 
 ## Overview
 
