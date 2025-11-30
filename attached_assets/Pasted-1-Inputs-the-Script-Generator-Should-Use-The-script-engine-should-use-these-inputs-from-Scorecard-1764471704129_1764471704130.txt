@@ -1,0 +1,344 @@
+1. Inputs the Script Generator Should Use
+
+The script engine should use these inputs (from Scorecard + Leverage Quiz + user choices):
+
+Required:
+
+Role (e.g., “Senior Product Manager”)
+
+Years of experience
+
+Company name making the offer
+
+Location
+
+Offer details:
+
+Base salary
+
+Bonus / equity summary (if available)
+
+Market range from Scorecard (e.g., $180–195k)
+
+Leverage tier (Low / Moderate / High)
+
+Suggested raise range (e.g., 10–15%)
+
+Tone slider value (Polite ↔ Aggressive)
+
+Nice to have:
+
+Whether this is:
+
+External offer
+
+Internal promotion / raise
+
+Retention/counter scenario
+
+The app generates only the body text so the user can add their own greeting and sign-off.
+
+2. Standard Script Structure (Body Only)
+
+Every script can follow the same internal structure:
+
+Gratitude & enthusiasm
+
+Offer recap
+
+Market / value framing (use years of experience, role, company, location)
+
+State the market gap (Scorecard)
+
+The ask (number/range, driven by leverage + tone)
+
+Risk/safety line (“open to discussion”)
+
+Closing sentence
+
+No greeting, no name — just the core paragraphs.
+
+3. Tone Rules (Polite → Bold)
+
+The tone slider controls how each “slot” is worded:
+
+Amount of hedging vs directness
+
+How explicit the ask is
+
+Whether other offers are mentioned
+
+Whether language leans “hope to explore” vs “I’m targeting / I expect”
+
+You can treat the slider as 3 levels.
+
+Tone Level 1 – Polite / Soft
+
+Use when:
+
+Low leverage, and/or slider far left.
+
+Characteristics:
+
+Hedging (“wondering if…”).
+
+Emphasis on enthusiasm and mutual fit.
+
+Ask often phrased as a question or “explore” language.
+
+Example phrasings:
+
+“I’m really excited about the opportunity to join [Company] as a [Role].”
+
+“I was wondering if there might be any flexibility in the base salary.”
+
+“I’d appreciate it if we could explore bringing the offer closer to [X].”
+
+Tone Level 2 – Professional / Firm
+
+Use when:
+
+Moderate leverage, or slider near middle.
+
+Characteristics:
+
+Direct but respectful.
+
+Clear request, justified by experience + market.
+
+Less hedging, more “I’d like to…”
+
+Examples:
+
+“Given my [X] years of experience and the scope of this role, I’d like to discuss an adjustment to the base salary.”
+
+“Based on market data and my background, I believe a range of [X–Y] would be more aligned.”
+
+“Is there room to move the base salary to [X] to reflect that?”
+
+Tone Level 3 – Bold / Aggressive
+
+Use when:
+
+High leverage and slider near right.
+
+Characteristics:
+
+Clear anchor and expectation.
+
+Explicit reference to other offers / deadlines (without being rude).
+
+Language like “I’m targeting” or “I expect”.
+
+Examples:
+
+“Given my track record and other opportunities I’m considering, I’m targeting a base salary of [X].”
+
+“If we can get to [X] base with the current equity and bonus structure, I’d be comfortable signing quickly.”
+
+“Other offers I’m evaluating are in the [X–Y] range, so I’d like to see if [Company] can come closer to that.”
+
+4. Mapping Leverage & Scorecard to the Ask
+
+You already have:
+
+Leverage Tier: Low / Moderate / High
+
+Suggested Range: e.g., 5–10%, 10–15%, or 15–25%
+
+Offer & Market Range: from Scorecard
+
+Let:
+
+offer = current base salary
+
+min_pct, max_pct = suggested percentage range
+
+mid_pct = middle of that range
+
+Then:
+
+Polite + Low leverage:
+
+Don’t anchor super hard; talk about “closer to” a number or a small range.
+
+Use something near min_pct.
+
+Firm + Moderate leverage:
+
+State a clear target near mid_pct:
+
+“around [offer * (1 + mid_pct)]”.
+
+Bold + High leverage:
+
+Anchor near max_pct:
+
+“in the neighborhood of [offer * (1 + max_pct)]”.
+
+Also adjust if the Scorecard shows:
+
+Offer is already fair or strong:
+
+Tone down the ask:
+
+“small adjustment”
+
+“bringing it closer to the top of the range”
+
+or shift to non-salary items (title, equity, flexibility).
+
+5. Phrase Banks & Templates (Body Only)
+5.1 External Offer Template – Body Only
+
+This is what you generate (user adds greeting + sign-off themselves).
+
+Section 1 – Gratitude & enthusiasm
+
+Polite:
+
+Thank you again for the offer to join [Company] as a [Role]. I really appreciate the time the team has invested, and I’m excited about the opportunity.
+
+Firm:
+
+Thank you for the offer to join [Company] as a [Role]. I’ve enjoyed the conversations with the team and I’m enthusiastic about the role.
+
+Bold:
+
+Thank you for the offer to join [Company] as a [Role]. I’m excited about the impact this role can have and the chance to contribute at [Company].
+
+Section 2 – Offer recap
+
+As I understand it, the offer includes a base salary of [Offer], plus [bonus/equity summary if known].
+
+(If bonus/equity unknown, just keep base.)
+
+Section 3 – Market / value framing
+
+Polite:
+
+Given my [X] years of experience in [domain] and the scope of this position, I took some time to compare the offer with typical ranges for similar roles in [location].
+
+Firm:
+
+With [X] years of experience in [domain] and the responsibilities we discussed, I’ve reviewed current market ranges for similar roles in [location].
+
+Bold:
+
+With [X] years in [domain] and a track record of [brief result/impact], I’ve been comparing this offer to others I’m considering and to market rates for similar roles in [location].
+
+Section 4 – State the market gap (Scorecard)
+
+From what I’m seeing, a typical range for this kind of role is approximately [MarketRangeLow–MarketRangeHigh].
+
+If they’re above market:
+
+From what I’m seeing, the offer is already competitive compared to typical ranges of [MarketRangeLow–MarketRangeHigh].
+
+Section 5 – The ask (driven by leverage + tone)
+
+Examples based on tier & tone:
+
+Low leverage + Polite (5–10%):
+
+I’m very interested in joining the team, and I’m wondering if there might be flexibility to bring the base salary closer to [target or small range] to better reflect that market range.
+
+Moderate leverage + Firm (10–15%):
+
+Based on this, I’d like to see if we can adjust the base salary to around [target], which I believe is a fair reflection of my experience and the role’s scope.
+
+High leverage + Bold (15–25%):
+
+Given this and the other opportunities I’m evaluating in the [comparison range] band, I’m looking for a base salary in the neighborhood of [target] to feel comfortable moving forward quickly with [Company].
+
+If the offer is already at/above market, generate alternatives like:
+
+I’d love to explore a small adjustment to bring the base closer to [target], or alternatively consider enhancements to equity, signing bonus, or other aspects of the package.
+
+Section 6 – Risk / collaboration line
+
+Polite:
+
+I’m definitely flexible and open to discussing what’s possible on your end.
+
+Firm:
+
+I’m happy to talk through what’s feasible and find a number that works for both of us.
+
+Bold:
+
+If there’s room to get to that level, I’d be excited to move ahead and wrap this up quickly.
+
+Section 7 – Closing sentence
+
+Polite:
+
+Thank you again for the offer and for considering this adjustment.
+
+Firm:
+
+Thanks again for the offer and for taking the time to review this.
+
+Bold:
+
+I appreciate your consideration and I’m looking forward to hearing what might be possible.
+
+5.2 Internal Raise / Promotion Variant – Body Only
+
+Swap in internal-language blocks for Sections 3–5:
+
+Value framing:
+
+Over the past [X] years at [Company], I’ve [brief impact summary: “led [project], improved [metric], delivered [result]”]. Given that and what I’m seeing for similar roles in the market, I’d like to discuss how my compensation aligns with that level of responsibility and contribution.
+
+Ask (tone-adjusted):
+
+Polite:
+
+I’d appreciate exploring a base salary closer to [target] to better reflect that scope.
+
+Firm:
+
+I’d like to discuss adjusting my base salary to around [target] to bring it in line with the impact and responsibilities of this role.
+
+Bold:
+
+Given these results and current market levels, I’m targeting a base salary of [target] and would like to align my compensation accordingly.
+
+6. Edge Cases to Plan For
+
+Offer above market
+
+Don’t encourage a huge percentage ask.
+
+Emphasize:
+
+Small tweaks (“small adjustment”)
+
+Non-salary components (equity, signing bonus, role scope, title, flexibility).
+
+Very low leverage + weak company financials
+
+Default to Polite tone.
+
+Suggest modest ask or focus on non-cash improvements.
+
+Avoid bold references to other offers if they’re not strong.
+
+High leverage + multiple offers + urgent company
+
+Use Bold tone, explicit reference to other offers and deadlines:
+
+“other opportunities I’m evaluating”
+
+“if we can get to X, I can commit quickly.”
+
+No base salary known
+
+Generate more qualitative asks:
+
+“toward the upper end of the typical range you’re seeing for this role”
+
+“a bit closer to the [MarketRangeHigh] end of the range”
+
+Prompt user in UI: “Add your base salary to get a concrete target number.”

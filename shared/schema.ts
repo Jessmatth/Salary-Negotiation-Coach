@@ -170,9 +170,14 @@ export const scriptInputSchema = z.object({
   yearsExperience: z.coerce.number(),
   location: z.string(),
   currentOffer: z.coerce.number(),
+  bonusSummary: z.string().optional(),
+  marketRangeLow: z.coerce.number(),
+  marketRangeHigh: z.coerce.number(),
   marketMedian: z.coerce.number(),
-  leverageScore: z.coerce.number().optional(),
-  leverageTier: z.enum(["low", "moderate", "high"]).optional(),
+  leverageTier: z.enum(["low", "moderate", "high"]).default("moderate"),
+  suggestedRangeMinPercent: z.coerce.number().default(5),
+  suggestedRangeMaxPercent: z.coerce.number().default(15),
+  scenarioType: z.enum(["external", "internal_raise", "retention"]).default("external"),
   tone: z.enum(["polite", "professional", "aggressive"]),
   askAmount: z.coerce.number().optional().nullable().transform(v => v ?? undefined),
 });
@@ -180,9 +185,9 @@ export type ScriptInput = z.infer<typeof scriptInputSchema>;
 
 // Script Result Schema
 export const scriptResultSchema = z.object({
-  subject: z.string(),
   body: z.string(),
   tone: z.enum(["polite", "professional", "aggressive"]),
+  targetAmount: z.number(),
   contextSummary: z.string(),
 });
 export type ScriptResult = z.infer<typeof scriptResultSchema>;
