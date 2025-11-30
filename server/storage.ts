@@ -2,6 +2,7 @@ import {
   compensationRecords, 
   offerEvaluations,
   quizResponses,
+  scriptSessions,
   userFeedback,
   type CompensationRecord, 
   type InsertCompensationRecord,
@@ -49,6 +50,9 @@ export interface IStorage {
   
   // Quiz Responses  
   saveQuizResponse(data: any): Promise<any>;
+  
+  // Script Sessions
+  saveScriptSession(data: any): Promise<any>;
   
   // User Feedback
   saveFeedback(data: FeedbackInput): Promise<any>;
@@ -309,6 +313,14 @@ export class DatabaseStorage implements IStorage {
   async saveQuizResponse(data: any): Promise<any> {
     const [saved] = await db
       .insert(quizResponses)
+      .values(data)
+      .returning();
+    return saved;
+  }
+  
+  async saveScriptSession(data: any): Promise<any> {
+    const [saved] = await db
+      .insert(scriptSessions)
       .values(data)
       .returning();
     return saved;

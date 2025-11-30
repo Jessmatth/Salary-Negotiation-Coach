@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useScriptGenerator } from "@/lib/api";
+import { useScriptGenerator, useFeedback } from "@/lib/api";
 import { scriptInputSchema, type ScriptInput, type ScriptResult } from "@shared/schema";
-import { ArrowLeft, TrendingUp, Loader2, Copy, Mail, Check, RefreshCw, MessageSquare, Target } from "lucide-react";
+import { ArrowLeft, TrendingUp, Loader2, Copy, Mail, Check, RefreshCw, MessageSquare, Target, ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const TONE_LABELS = {
@@ -60,7 +60,23 @@ export default function Scripts() {
   const [tone, setTone] = useState<"polite" | "professional" | "aggressive">("professional");
   const [leverageTier, setLeverageTier] = useState<"low" | "moderate" | "high">("moderate");
   const [scenarioType, setScenarioType] = useState<"external" | "internal_raise" | "retention">("external");
+  const [feedbackGiven, setFeedbackGiven] = useState<boolean | null>(null);
   const scriptGenerator = useScriptGenerator();
+  const feedback = useFeedback();
+
+  const handleFeedback = async (isPositive: boolean) => {
+    if (!script?.sessionId) return;
+    try {
+      await feedback.mutateAsync({
+        sessionId: script.sessionId,
+        feedbackType: "script",
+        rating: isPositive ? "up" : "down",
+      });
+      setFeedbackGiven(isPositive);
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    }
+  };
 
   const form = useForm<Omit<ScriptInput, "tone" | "leverageTier" | "scenarioType">>({
     resolver: zodResolver(scriptInputSchema.omit({ tone: true, leverageTier: true, scenarioType: true })),
@@ -81,6 +97,7 @@ export default function Scripts() {
       const res = await scriptGenerator.mutateAsync({ ...data, tone, leverageTier, scenarioType });
       setScript(res);
       setEditedBody(res.body);
+      setFeedbackGiven(null);
     } catch (error) {
       console.error("Failed to generate script:", error);
     }
@@ -97,6 +114,7 @@ export default function Scripts() {
         const res = await scriptGenerator.mutateAsync({ ...formData, tone: newTone, leverageTier, scenarioType });
         setScript(res);
         setEditedBody(res.body);
+        setFeedbackGiven(null);
       } catch (error) {
         console.error("Failed to regenerate script:", error);
       }
@@ -148,6 +166,7 @@ export default function Scripts() {
       const res = await scriptGenerator.mutateAsync({ ...formData, tone, leverageTier, scenarioType });
       setScript(res);
       setEditedBody(res.body);
+      setFeedbackGiven(null);
     } catch (error) {
       console.error("Failed to regenerate script:", error);
     }
@@ -466,6 +485,40 @@ export default function Scripts() {
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                       <span className="px-2 py-1 rounded bg-slate-700">{TONE_LABELS[script.tone].label}</span>
                       <span>{script.contextSummary}</span>
+                    </div>
+
+                    <div className="border-t border-slate-700 pt-4 mt-4">
+                      <div className="flex items-center justify-center gap-4">
+                        <span className="text-slate-400 text-sm">Was this script helpful?</span>
+                        {feedbackGiven === null ? (
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleFeedback(true)}
+                              disabled={feedback.isPending}
+                              className="text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10"
+                              data-testid="button-feedback-positive"
+                            >
+                              <ThumbsUp className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleFeedback(false)}
+                              disabled={feedback.isPending}
+                              className="text-slate-400 hover:text-red-400 hover:bg-red-400/10"
+                              data-testid="button-feedback-negative"
+                            >
+                              <ThumbsDown className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className={`text-sm ${feedbackGiven ? "text-emerald-400" : "text-red-400"}`} data-testid="text-feedback-thanks">
+                            Thanks for your feedback!
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ) : (

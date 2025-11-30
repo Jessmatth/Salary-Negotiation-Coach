@@ -87,6 +87,33 @@ export const quizResponses = pgTable("quiz_responses", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Script Sessions Table - stores generated script sessions
+export const scriptSessions = pgTable("script_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  
+  jobTitle: text("job_title").notNull(),
+  companyName: text("company_name"),
+  yearsExperience: integer("years_experience").notNull(),
+  location: text("location").notNull(),
+  currentOffer: integer("current_offer").notNull(),
+  bonusSummary: text("bonus_summary"),
+  
+  marketRangeLow: integer("market_range_low").notNull(),
+  marketRangeHigh: integer("market_range_high").notNull(),
+  marketMedian: integer("market_median").notNull(),
+  
+  leverageTier: text("leverage_tier").notNull(),
+  scenarioType: text("scenario_type").notNull(),
+  suggestedRangeMinPercent: integer("suggested_range_min_percent").notNull(),
+  suggestedRangeMaxPercent: integer("suggested_range_max_percent").notNull(),
+  tone: text("tone").notNull(),
+  askAmount: integer("ask_amount"),
+  targetAmount: integer("target_amount").notNull(),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // User Feedback Table - stores thumbs up/down feedback
 export const userFeedback = pgTable("user_feedback", {
   id: serial("id").primaryKey(),
@@ -194,6 +221,7 @@ export type ScriptInput = z.infer<typeof scriptInputSchema>;
 
 // Script Result Schema
 export const scriptResultSchema = z.object({
+  sessionId: z.string(),
   body: z.string(),
   tone: z.enum(["polite", "professional", "aggressive"]),
   targetAmount: z.number(),

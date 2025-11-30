@@ -130,6 +130,7 @@ export async function registerRoutes(
   app.post("/api/scripts", async (req, res) => {
     try {
       const input = scriptInputSchema.parse(req.body);
+      const sessionId = randomUUID();
       
       const script = generateNegotiationScript({
         jobTitle: input.jobTitle,
@@ -149,6 +150,27 @@ export async function registerRoutes(
         askAmount: input.askAmount,
       });
       
+      // Save script session for feedback correlation
+      await storage.saveScriptSession({
+        sessionId,
+        jobTitle: input.jobTitle,
+        companyName: input.companyName || null,
+        yearsExperience: input.yearsExperience,
+        location: input.location,
+        currentOffer: input.currentOffer,
+        bonusSummary: input.bonusSummary || null,
+        marketRangeLow: input.marketRangeLow,
+        marketRangeHigh: input.marketRangeHigh,
+        marketMedian: input.marketMedian,
+        leverageTier: input.leverageTier,
+        scenarioType: input.scenarioType,
+        suggestedRangeMinPercent: input.suggestedRangeMinPercent,
+        suggestedRangeMaxPercent: input.suggestedRangeMaxPercent,
+        tone: input.tone,
+        askAmount: input.askAmount || null,
+        targetAmount: script.targetAmount,
+      });
+      
       // Build context summary
       const contextParts = [input.jobTitle];
       if (input.yearsExperience) contextParts.push(`${input.yearsExperience} years`);
@@ -157,6 +179,7 @@ export async function registerRoutes(
       contextParts.push(`Leverage: ${input.leverageTier.charAt(0).toUpperCase()}${input.leverageTier.slice(1)}`);
       
       res.json({
+        sessionId,
         body: script.body,
         tone: input.tone,
         targetAmount: script.targetAmount,

@@ -274,8 +274,8 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
     try {
       await feedback.mutateAsync({
         sessionId: result.sessionId,
-        featureType: "scorecard",
-        isPositive,
+        feedbackType: "scorecard",
+        rating: isPositive ? "up" : "down",
       });
       setFeedbackGiven(isPositive);
     } catch (error) {
