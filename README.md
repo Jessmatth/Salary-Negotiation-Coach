@@ -8,8 +8,8 @@ The Salary Negotiation Coach is a targeted application designed to empower job s
 
 The initial application focuses on three high-impact features that guide the user through the entire negotiation preparation process:
 
-### Offer Scorecard
-Compare your salary offer against 45,000+ real market data points. See where your offer falls in the market (percentile position) and get insights on whether you're being offered a competitive package.
+### Good Offer Scorecard
+Compare your salary offer against 45,000+ real market data points. The user instantly sees the exact dollar difference between their offer and the median salary for their role and where your offer falls in the market.
 
 ### Leverage Quiz
 An 8-question assessment that calculates your negotiation power score (0-100). Based on factors like competing offers, market demand for your skills, and your current situation, you'll receive tactical recommendations on how hard to push.
