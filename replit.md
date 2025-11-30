@@ -36,6 +36,15 @@ Preferred communication style: Simple, everyday language.
 
 **Server Framework**: Express.js running on Node.js with TypeScript.
 
+**Authentication**: Replit Auth via OpenID Connect (OIDC)
+- Sessions stored in PostgreSQL `sessions` table
+- User profiles stored in `users` table
+- `isAuthenticated` middleware for protected routes
+- `/api/login` - Initiates OAuth login flow
+- `/api/logout` - Ends session and redirects
+- `/api/callback` - OAuth callback handler
+- `/api/auth/user` - Returns authenticated user info
+
 **API Endpoints**:
 - `POST /api/scorecard` - Accepts offer details, returns market comparison with percentile position
 - `POST /api/leverage-score` - Scores 8 quiz questions using weighted rubric, returns 0-100 score
@@ -56,16 +65,20 @@ Preferred communication style: Simple, everyday language.
 **ORM**: Drizzle ORM with schema in `shared/schema.ts`.
 
 **Database Tables**:
-1. `compensation_records` - 45,000+ salary records with:
+1. `sessions` - Session storage for Replit Auth (required for auth)
+
+2. `users` - User profiles from Replit Auth (id, email, name, profile image)
+
+3. `compensation_records` - 45,000+ salary records with:
    - Job title, SOC code, industry, company size/type
    - Location (state, MSA, cost of living index)
    - Salary ranges (min, median, max, total comp)
    - Experience, education, skills, management level
    - Data source, confidence score, sample size
 
-2. `offer_evaluations` - Stores user scorecard sessions with offer details and results
+4. `offer_evaluations` - Stores user scorecard sessions with offer details and results
 
-3. `quiz_responses` - Stores leverage quiz answers and calculated scores
+5. `quiz_responses` - Stores leverage quiz answers and calculated scores
 
 ### Key Files
 
