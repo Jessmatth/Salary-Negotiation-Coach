@@ -9,12 +9,27 @@ import { ArrowLeft, ArrowRight, TrendingUp, Loader2, Zap, AlertTriangle, CheckCi
 
 type QuestionId = keyof LeverageQuizInput;
 
+function getUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    jobTitle: params.get("jobTitle") || "",
+    companyName: params.get("companyName") || "",
+    yearsExperience: params.get("yearsExperience") || "",
+    location: params.get("location") || "",
+    currentOffer: params.get("currentOffer") || "",
+    marketRangeLow: params.get("marketRangeLow") || "",
+    marketMedian: params.get("marketMedian") || "",
+    marketRangeHigh: params.get("marketRangeHigh") || "",
+  };
+}
+
 export default function Quiz() {
   const [, navigate] = useLocation();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Partial<LeverageQuizInput>>({});
   const [result, setResult] = useState<LeverageResult | null>(null);
   const leverageScore = useLeverageScore();
+  const urlParams = getUrlParams();
 
   const question = LEVERAGE_QUESTIONS[currentQuestion];
   const progress = ((currentQuestion + 1) / LEVERAGE_QUESTIONS.length) * 100;
@@ -45,7 +60,7 @@ export default function Quiz() {
   };
 
   if (result) {
-    return <QuizResult result={result} onRestart={() => { setResult(null); setCurrentQuestion(0); setAnswers({}); }} />;
+    return <QuizResult result={result} urlParams={urlParams} onRestart={() => { setResult(null); setCurrentQuestion(0); setAnswers({}); }} />;
   }
 
   return (
@@ -132,7 +147,18 @@ export default function Quiz() {
   );
 }
 
-function QuizResult({ result, onRestart }: { result: LeverageResult; onRestart: () => void }) {
+interface UrlParams {
+  jobTitle: string;
+  companyName: string;
+  yearsExperience: string;
+  location: string;
+  currentOffer: string;
+  marketRangeLow: string;
+  marketMedian: string;
+  marketRangeHigh: string;
+}
+
+function QuizResult({ result, urlParams, onRestart }: { result: LeverageResult; urlParams: UrlParams; onRestart: () => void }) {
   const [, navigate] = useLocation();
 
   const getTierColor = (tier: string) => {
@@ -268,7 +294,15 @@ function QuizResult({ result, onRestart }: { result: LeverageResult; onRestart: 
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
-              onClick={() => navigate("/scripts")}
+              onClick={() => {
+                const params = new URLSearchParams({
+                  ...urlParams,
+                  leverageTier: result.tier,
+                  suggestedRangeMinPercent: String(result.suggestedRange.minPercent),
+                  suggestedRangeMaxPercent: String(result.suggestedRange.maxPercent),
+                });
+                navigate(`/scripts?${params.toString()}`);
+              }}
               size="lg"
               className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold"
               data-testid="button-generate-script"

@@ -425,7 +425,19 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
-              onClick={() => navigate("/quiz")}
+              onClick={() => {
+                const params = new URLSearchParams({
+                  jobTitle: result.input.jobTitle,
+                  companyName: result.input.companyName || "",
+                  yearsExperience: String(result.input.yearsExperience),
+                  location: result.input.location,
+                  currentOffer: String(result.input.baseSalaryOffered),
+                  marketRangeLow: String(result.marketRange.p25),
+                  marketMedian: String(result.marketRange.median),
+                  marketRangeHigh: String(result.marketRange.p75),
+                });
+                navigate(`/quiz?${params.toString()}`);
+              }}
               size="lg"
               className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold"
               data-testid="button-take-quiz"
