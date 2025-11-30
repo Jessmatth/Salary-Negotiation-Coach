@@ -196,7 +196,7 @@ export default function Scripts() {
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">What to Say</h1>
-            <p className="text-slate-400">Generate a personalized negotiation script (body only - add your own greeting)</p>
+            <p className="text-slate-400">Generate a personalized negotiation script</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
