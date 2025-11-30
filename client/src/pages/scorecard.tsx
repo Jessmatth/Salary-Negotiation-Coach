@@ -79,7 +79,7 @@ export default function Scorecard() {
           </Link>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Am I Underpaid?</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Evaluate My Offer</h1>
             <p className="text-slate-400">Enter your offer details to find out where you stand</p>
           </div>
 

@@ -115,7 +115,7 @@ export default function Scripts() {
           </Link>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">What Should I Say?</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">What to Say</h1>
             <p className="text-slate-400">Generate a personalized negotiation email</p>
           </div>
 

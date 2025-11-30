@@ -69,7 +69,7 @@ export default function Quiz() {
           </Link>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">How Hard Can I Push?</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">How Hard to Push</h1>
             <p className="text-slate-400">Answer 8 questions to discover your negotiation power</p>
           </div>
 

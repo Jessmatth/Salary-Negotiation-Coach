@@ -19,13 +19,13 @@ export default function Home() {
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/scorecard" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scorecard-nav">
-              Am I Underpaid?
-            </Link>
-            <Link href="/quiz" className="text-slate-300 hover:text-white transition-colors" data-testid="link-quiz-nav">
-              How Hard Can I Push?
+              Evaluate My Offer
             </Link>
             <Link href="/scripts" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scripts-nav">
-              What Should I Say?
+              What to Say
+            </Link>
+            <Link href="/quiz" className="text-slate-300 hover:text-white transition-colors" data-testid="link-quiz-nav">
+              How Hard to Push
             </Link>
           </nav>
         </div>
@@ -40,23 +40,28 @@ export default function Home() {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Am I <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Underpaid</span>?
+              Is This a <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Good Offer</span>?
             </h1>
             
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
               Find out in seconds. Compare your offer to real market data, discover how hard you can push, and get the exact words to say.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
               <Link href="/scorecard">
                 <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-emerald-500/25" data-testid="button-check-offer">
-                  Check My Offer
+                  Evaluate My Offer
                   <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+              <Link href="/scripts">
+                <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-what-to-say">
+                  What to Say
                 </Button>
               </Link>
               <Link href="/quiz">
                 <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-take-quiz">
-                  How Hard Can I Push?
+                  How Hard to Push
                 </Button>
               </Link>
             </div>
@@ -70,21 +75,9 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
                   <Target className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Am I Underpaid?</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">Evaluate My Offer</h3>
                 <p className="text-slate-400">
                   Compare your offer to {stats?.uniqueRoles?.toLocaleString() || "11,000"}+ roles. See exactly where you stand: underpaid, fair, or above market.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-800/50 border-slate-700 hover:border-teal-500/50 transition-colors group">
-              <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center mb-4 group-hover:bg-teal-500/20 transition-colors">
-                  <Zap className="w-6 h-6 text-teal-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">How Hard Can I Push?</h3>
-                <p className="text-slate-400">
-                  Answer 8 quick questions to calculate your negotiation power. Get a 0-100 leverage score and tailored tactics.
                 </p>
               </CardContent>
             </Card>
@@ -94,9 +87,21 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4 group-hover:bg-cyan-500/20 transition-colors">
                   <MessageSquare className="w-6 h-6 text-cyan-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">What Should I Say?</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">What to Say</h3>
                 <p className="text-slate-400">
                   Generate a ready-to-send negotiation email tuned to your situation and preferred tone.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800/50 border-slate-700 hover:border-teal-500/50 transition-colors group">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center mb-4 group-hover:bg-teal-500/20 transition-colors">
+                  <Zap className="w-6 h-6 text-teal-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">How Hard to Push</h3>
+                <p className="text-slate-400">
+                  Answer 8 quick questions to calculate your negotiation power. Get a 0-100 leverage score and tailored tactics.
                 </p>
               </CardContent>
             </Card>
@@ -116,28 +121,28 @@ export default function Home() {
                   1
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">Am I Underpaid?</h3>
+                  <h3 className="text-lg font-semibold text-white mb-1">Evaluate My Offer</h3>
                   <p className="text-slate-400">Enter your offer details and instantly see how it compares to real market data from 45,000+ salary records.</p>
                 </div>
               </div>
 
               <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-teal-500/20 flex items-center justify-center flex-shrink-0 text-teal-400 font-bold">
+                <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 text-cyan-400 font-bold">
                   2
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">How Hard Can I Push?</h3>
-                  <p className="text-slate-400">Answer 8 quick questions to calculate your leverage score. Learn exactly how aggressive you can be.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">What to Say</h3>
+                  <p className="text-slate-400">Generate a professionally-crafted negotiation email tailored to your situation and preferred tone.</p>
                 </div>
               </div>
 
               <div className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 text-cyan-400 font-bold">
+                <div className="w-10 h-10 rounded-full bg-teal-500/20 flex items-center justify-center flex-shrink-0 text-teal-400 font-bold">
                   3
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">What Should I Say?</h3>
-                  <p className="text-slate-400">Generate a professionally-crafted negotiation email tailored to your situation and preferred tone.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">How Hard to Push</h3>
+                  <p className="text-slate-400">Answer 8 quick questions to calculate your leverage score. Learn exactly how aggressive you can be.</p>
                 </div>
               </div>
             </div>
