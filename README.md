@@ -15,7 +15,7 @@ Compare your salary offer against 45,000+ real market data points. The user inst
 Determine the user's negotiation power to personalize the subsequent script and advice. An 8-question assessment calculates a 0-100 negotiation power score. The user receives tactical recommendations based on factors like competing offers, market demand, and current employment.
 
 ### Script Generator
-Get customizable negotiation email templates with adjustable tone (Polite, Professional, or Assertive). Edit and personalize the scripts to match your style before sending.
+Eliminate writing anxiety by providing a safe, customizable, ready-to-send negotiation email. The user selects a tone using a simple slider: Polite (Gentle), Professional (Balanced), or Confident (Bold). The system uses the user's offer details, desired counter-offer, and their Leverage Score to generate a cohesive email draft using the Gemini API. The resulting script is professional, specific to their numbers, and psychologically appropriate for their current position.
 
 ## Tech Stack
 
