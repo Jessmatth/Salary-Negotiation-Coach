@@ -155,80 +155,275 @@ export function calculateLeverageWithDollars(
   return result;
 }
 
-// Script generation logic
+// Script generation logic - Enhanced with 7-section structure and phrase banks
+
 interface ScriptContext {
   jobTitle: string;
   companyName?: string;
   yearsExperience: number;
   location: string;
   currentOffer: number;
+  bonusSummary?: string;
+  marketRangeLow: number;
+  marketRangeHigh: number;
   marketMedian: number;
-  askAmount?: number;
+  leverageTier: "low" | "moderate" | "high";
+  suggestedRangeMinPercent: number;
+  suggestedRangeMaxPercent: number;
+  scenarioType: "external" | "internal_raise" | "retention";
   tone: "polite" | "professional" | "aggressive";
+  askAmount?: number;
 }
 
-const TONE_PHRASES = {
-  opening: {
-    polite: "Thank you so much for the offer to join as",
-    professional: "I appreciate the offer for the",
-    aggressive: "I've reviewed the offer for the",
+const formatMoney = (n: number) => `$${n.toLocaleString()}`;
+
+// Section 1: Gratitude & Enthusiasm
+const GRATITUDE_PHRASES = {
+  external: {
+    polite: (company: string, role: string) => 
+      `Thank you again for the offer to join ${company} as a ${role}. I really appreciate the time the team has invested, and I'm excited about the opportunity.`,
+    professional: (company: string, role: string) =>
+      `Thank you for the offer to join ${company} as a ${role}. I've enjoyed the conversations with the team and I'm enthusiastic about the role.`,
+    aggressive: (company: string, role: string) =>
+      `Thank you for the offer to join ${company} as a ${role}. I'm excited about the impact this role can have and the chance to contribute at ${company}.`,
   },
-  transition: {
-    polite: "I was hoping we might be able to discuss",
-    professional: "Based on my research, I'd like to discuss",
-    aggressive: "Given my experience and market data, I need to address",
+  internal_raise: {
+    polite: (company: string, role: string) =>
+      `Thank you for taking the time to discuss my role and compensation. I'm grateful for the opportunities I've had at ${company} and excited about continuing to grow here.`,
+    professional: (company: string, role: string) =>
+      `I appreciate the opportunity to discuss my compensation. I've valued my time at ${company} and I'm committed to continuing to deliver strong results.`,
+    aggressive: (company: string, role: string) =>
+      `Thank you for the opportunity to discuss my compensation. I'm proud of what I've accomplished at ${company} and believe it's time to align my compensation with my contributions.`,
   },
-  ask: {
-    polite: "Would it be possible to explore a base salary closer to",
-    professional: "I'm looking for a base salary in the range of",
-    aggressive: "I expect a base salary of at least",
-  },
-  justification: {
-    polite: "I believe this would better reflect",
-    professional: "This aligns with",
-    aggressive: "This is consistent with",
-  },
-  closing: {
-    polite: "I'm very excited about this opportunity and hope we can find a way to make this work.",
-    professional: "I'm confident we can come to a mutually beneficial agreement.",
-    aggressive: "I look forward to your revised offer.",
+  retention: {
+    polite: (company: string, role: string) =>
+      `Thank you for taking the time to discuss this with me. I've appreciated my time at ${company} and want to find a path forward that works for both of us.`,
+    professional: (company: string, role: string) =>
+      `I appreciate you taking the time to discuss retention options. I value what I've built at ${company} and want to explore how we can continue working together.`,
+    aggressive: (company: string, role: string) =>
+      `Thank you for the opportunity to discuss this. Given the alternatives I'm considering, I want to be direct about what it would take for me to stay at ${company}.`,
   },
 };
 
-export function generateNegotiationScript(context: ScriptContext): { subject: string; body: string } {
-  const { tone, jobTitle, companyName, yearsExperience, currentOffer, marketMedian } = context;
-  
-  // Calculate ask amount if not provided - suggest 10-15% above market median
-  const askAmount = context.askAmount || Math.round(Math.max(marketMedian * 1.1, currentOffer * 1.1));
-  
-  const phrases = {
-    opening: TONE_PHRASES.opening[tone],
-    transition: TONE_PHRASES.transition[tone],
-    ask: TONE_PHRASES.ask[tone],
-    justification: TONE_PHRASES.justification[tone],
-    closing: TONE_PHRASES.closing[tone],
+// Section 2: Offer Recap
+function generateOfferRecap(offer: number, bonusSummary?: string): string {
+  if (bonusSummary) {
+    return `As I understand it, the offer includes a base salary of ${formatMoney(offer)}, plus ${bonusSummary}.`;
+  }
+  return `As I understand it, the offer includes a base salary of ${formatMoney(offer)}.`;
+}
+
+// Section 3: Market/Value Framing
+const VALUE_FRAMING = {
+  external: {
+    polite: (years: number, location: string) =>
+      `Given my ${years} years of experience and the scope of this position, I took some time to compare the offer with typical ranges for similar roles in ${location}.`,
+    professional: (years: number, location: string) =>
+      `With ${years} years of experience and the responsibilities we discussed, I've reviewed current market ranges for similar roles in ${location}.`,
+    aggressive: (years: number, location: string) =>
+      `With ${years} years of experience and a strong track record of results, I've been comparing this offer to others I'm considering and to market rates for similar roles in ${location}.`,
+  },
+  internal_raise: {
+    polite: (years: number, location: string) =>
+      `Over my time here, I've taken on increasing responsibility and delivered consistent results. I've also looked at what similar roles are paying in ${location}.`,
+    professional: (years: number, location: string) =>
+      `Given my contributions over the past years and the scope of my current responsibilities, I've reviewed current market rates for comparable roles in ${location}.`,
+    aggressive: (years: number, location: string) =>
+      `Given my track record of results and the value I've delivered to the team, I've researched where my compensation stands relative to market rates for similar roles in ${location}.`,
+  },
+  retention: {
+    polite: (years: number, location: string) =>
+      `I've been reflecting on my contributions here and also looking at what similar roles are offering in ${location}.`,
+    professional: (years: number, location: string) =>
+      `I've evaluated both my contributions here and the current market for similar roles in ${location}.`,
+    aggressive: (years: number, location: string) =>
+      `I have concrete alternatives in the ${location} market, and I've been comparing those opportunities to my current situation.`,
+  },
+};
+
+// Section 4: Market Gap Statement
+function generateMarketGap(
+  offer: number, 
+  marketLow: number, 
+  marketHigh: number, 
+  isAboveMarket: boolean
+): string {
+  if (isAboveMarket) {
+    return `From what I'm seeing, the offer is already competitive compared to typical ranges of ${formatMoney(marketLow)}–${formatMoney(marketHigh)}.`;
+  }
+  return `From what I'm seeing, a typical range for this kind of role is approximately ${formatMoney(marketLow)}–${formatMoney(marketHigh)}.`;
+}
+
+// Section 5: The Ask (driven by leverage + tone)
+function generateAsk(
+  tone: "polite" | "professional" | "aggressive",
+  leverageTier: "low" | "moderate" | "high",
+  targetAmount: number,
+  isAboveMarket: boolean,
+  comparisonRange?: string
+): string {
+  if (isAboveMarket) {
+    // When offer is already competitive, suggest smaller adjustments or non-salary items
+    const asks = {
+      polite: `I'd love to explore a small adjustment to bring the base closer to ${formatMoney(targetAmount)}, or alternatively consider enhancements to equity, signing bonus, or other aspects of the package.`,
+      professional: `I'd like to discuss a modest adjustment to ${formatMoney(targetAmount)}, or explore improvements to other components like equity or flexibility.`,
+      aggressive: `I'm looking to get to ${formatMoney(targetAmount)} to close this out, or would consider enhanced equity or signing bonus as alternatives.`,
+    };
+    return asks[tone];
+  }
+
+  // Low leverage + Polite
+  if (leverageTier === "low" && tone === "polite") {
+    return `I'm very interested in joining the team, and I'm wondering if there might be flexibility to bring the base salary closer to ${formatMoney(targetAmount)} to better reflect that market range.`;
+  }
+
+  // Moderate leverage + Professional
+  if (leverageTier === "moderate" && tone === "professional") {
+    return `Based on this, I'd like to see if we can adjust the base salary to around ${formatMoney(targetAmount)}, which I believe is a fair reflection of my experience and the role's scope.`;
+  }
+
+  // High leverage + Aggressive
+  if (leverageTier === "high" && tone === "aggressive") {
+    const compRange = comparisonRange || `${formatMoney(targetAmount * 0.95)}–${formatMoney(targetAmount * 1.05)}`;
+    return `Given this and the other opportunities I'm evaluating in the ${compRange} band, I'm looking for a base salary in the neighborhood of ${formatMoney(targetAmount)} to feel comfortable moving forward quickly.`;
+  }
+
+  // Mixed combinations
+  const askTemplates = {
+    polite: {
+      low: `I was wondering if there might be any flexibility in the base salary. Would it be possible to explore something closer to ${formatMoney(targetAmount)}?`,
+      moderate: `I'd appreciate it if we could explore bringing the offer closer to ${formatMoney(targetAmount)} to better align with market rates.`,
+      high: `Given my situation, I'd like to explore a base salary closer to ${formatMoney(targetAmount)}. I'm hopeful we can find a number that works for both of us.`,
+    },
+    professional: {
+      low: `I'd like to discuss whether there's room to move the base salary closer to ${formatMoney(targetAmount)}.`,
+      moderate: `Based on my research, I believe a base salary around ${formatMoney(targetAmount)} would be more aligned with my experience and market rates.`,
+      high: `I'm looking for a base salary in the range of ${formatMoney(targetAmount)}. Is there room to get there?`,
+    },
+    aggressive: {
+      low: `Given market data, I believe ${formatMoney(targetAmount)} would be a fair base salary for this role.`,
+      moderate: `I'm targeting a base salary of ${formatMoney(targetAmount)} based on my experience and what I'm seeing in the market.`,
+      high: `I expect a base salary of at least ${formatMoney(targetAmount)}. If we can get there, I'd be comfortable signing quickly.`,
+    },
   };
+
+  return askTemplates[tone][leverageTier];
+}
+
+// Section 6: Risk/Collaboration Line
+const COLLABORATION_PHRASES = {
+  polite: "I'm definitely flexible and open to discussing what's possible on your end.",
+  professional: "I'm happy to talk through what's feasible and find a number that works for both of us.",
+  aggressive: "If there's room to get to that level, I'd be excited to move ahead and wrap this up quickly.",
+};
+
+// Section 7: Closing Sentence
+const CLOSING_PHRASES = {
+  polite: "Thank you again for the offer and for considering this adjustment.",
+  professional: "Thanks again for the offer and for taking the time to review this.",
+  aggressive: "I appreciate your consideration and I'm looking forward to hearing what might be possible.",
+};
+
+// Calculate target ask amount based on leverage, tone, and market position
+function calculateTargetAmount(
+  currentOffer: number,
+  leverageTier: "low" | "moderate" | "high",
+  tone: "polite" | "professional" | "aggressive",
+  suggestedMinPercent: number,
+  suggestedMaxPercent: number,
+  explicitAsk?: number
+): number {
+  if (explicitAsk) return explicitAsk;
+
+  const midPercent = (suggestedMinPercent + suggestedMaxPercent) / 2;
+
+  // Polite + Low leverage: use min percentage
+  if (tone === "polite" && leverageTier === "low") {
+    return Math.round(currentOffer * (1 + suggestedMinPercent / 100));
+  }
+
+  // Professional + Moderate leverage: use mid percentage
+  if (tone === "professional" && leverageTier === "moderate") {
+    return Math.round(currentOffer * (1 + midPercent / 100));
+  }
+
+  // Aggressive + High leverage: use max percentage
+  if (tone === "aggressive" && leverageTier === "high") {
+    return Math.round(currentOffer * (1 + suggestedMaxPercent / 100));
+  }
+
+  // Mixed combinations - interpolate
+  const toneMultiplier = { polite: 0.3, professional: 0.5, aggressive: 0.8 };
+  const leverageMultiplier = { low: 0.3, moderate: 0.5, high: 0.8 };
   
-  const formatMoney = (n: number) => `$${n.toLocaleString()}`;
-  const companyRef = companyName ? ` at ${companyName}` : "";
+  const combinedFactor = (toneMultiplier[tone] + leverageMultiplier[leverageTier]) / 2;
+  const targetPercent = suggestedMinPercent + (suggestedMaxPercent - suggestedMinPercent) * combinedFactor;
   
-  const subject = tone === "aggressive" 
-    ? "Regarding my offer - compensation discussion" 
-    : "Regarding my offer";
-  
-  const body = `Dear Hiring Team,
+  return Math.round(currentOffer * (1 + targetPercent / 100));
+}
 
-${phrases.opening} ${jobTitle}${companyRef}. I'm genuinely excited about the opportunity and the team.
+export function generateNegotiationScript(context: ScriptContext): { body: string; targetAmount: number } {
+  const {
+    tone,
+    jobTitle,
+    companyName = "the company",
+    yearsExperience,
+    location,
+    currentOffer,
+    bonusSummary,
+    marketRangeLow,
+    marketRangeHigh,
+    marketMedian,
+    leverageTier,
+    suggestedRangeMinPercent,
+    suggestedRangeMaxPercent,
+    scenarioType,
+    askAmount,
+  } = context;
 
-${phrases.transition} the compensation. After researching the market for similar roles with ${yearsExperience}+ years of experience, I found that the median compensation is around ${formatMoney(marketMedian)}.
+  // Determine if offer is already above market
+  const isAboveMarket = currentOffer >= marketMedian;
 
-${phrases.ask} ${formatMoney(askAmount)}. ${phrases.justification} market rates for this level of experience and the value I'll bring to the team.
+  // Calculate target amount
+  const targetAmount = calculateTargetAmount(
+    currentOffer,
+    leverageTier,
+    tone,
+    isAboveMarket ? Math.max(2, suggestedRangeMinPercent / 2) : suggestedRangeMinPercent,
+    isAboveMarket ? Math.max(5, suggestedRangeMaxPercent / 2) : suggestedRangeMaxPercent,
+    askAmount
+  );
 
-${phrases.closing}
+  // Build the 7 sections
+  const sections: string[] = [];
 
-Best regards`;
-  
-  return { subject, body };
+  // Section 1: Gratitude & Enthusiasm
+  sections.push(GRATITUDE_PHRASES[scenarioType][tone](companyName, jobTitle));
+
+  // Section 2: Offer Recap (only for external offers)
+  if (scenarioType === "external") {
+    sections.push(generateOfferRecap(currentOffer, bonusSummary));
+  }
+
+  // Section 3: Market/Value Framing
+  sections.push(VALUE_FRAMING[scenarioType][tone](yearsExperience, location));
+
+  // Section 4: State the Market Gap
+  sections.push(generateMarketGap(currentOffer, marketRangeLow, marketRangeHigh, isAboveMarket));
+
+  // Section 5: The Ask
+  sections.push(generateAsk(tone, leverageTier, targetAmount, isAboveMarket));
+
+  // Section 6: Risk/Collaboration Line
+  sections.push(COLLABORATION_PHRASES[tone]);
+
+  // Section 7: Closing
+  sections.push(CLOSING_PHRASES[tone]);
+
+  // Combine sections with proper paragraph breaks
+  const body = sections.join("\n\n");
+
+  return { body, targetAmount };
 }
 
 // Market position calculation

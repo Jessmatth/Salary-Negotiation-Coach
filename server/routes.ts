@@ -130,17 +130,22 @@ export async function registerRoutes(
     try {
       const input = scriptInputSchema.parse(req.body);
       
-      const askAmount = input.askAmount || Math.round(input.marketMedian * 1.1);
-      
       const script = generateNegotiationScript({
         jobTitle: input.jobTitle,
         companyName: input.companyName,
         yearsExperience: input.yearsExperience,
         location: input.location,
         currentOffer: input.currentOffer,
+        bonusSummary: input.bonusSummary,
+        marketRangeLow: input.marketRangeLow,
+        marketRangeHigh: input.marketRangeHigh,
         marketMedian: input.marketMedian,
-        askAmount,
+        leverageTier: input.leverageTier,
+        suggestedRangeMinPercent: input.suggestedRangeMinPercent,
+        suggestedRangeMaxPercent: input.suggestedRangeMaxPercent,
+        scenarioType: input.scenarioType,
         tone: input.tone,
+        askAmount: input.askAmount,
       });
       
       // Build context summary
@@ -148,14 +153,12 @@ export async function registerRoutes(
       if (input.yearsExperience) contextParts.push(`${input.yearsExperience} years`);
       if (input.companyName) contextParts.push(`Offer from ${input.companyName}`);
       if (input.location) contextParts.push(input.location);
-      if (input.leverageScore !== undefined) {
-        contextParts.push(`Leverage: ${input.leverageTier?.charAt(0).toUpperCase()}${input.leverageTier?.slice(1)} (${input.leverageScore}/100)`);
-      }
+      contextParts.push(`Leverage: ${input.leverageTier.charAt(0).toUpperCase()}${input.leverageTier.slice(1)}`);
       
       res.json({
-        subject: script.subject,
         body: script.body,
         tone: input.tone,
+        targetAmount: script.targetAmount,
         contextSummary: contextParts.join(" · "),
       });
     } catch (error) {
