@@ -408,8 +408,10 @@ export function generateNegotiationScript(context: ScriptContext): { body: strin
   // Section 3: Market/Value Framing
   sections.push(VALUE_FRAMING[scenarioType][tone](yearsExperience, location));
 
-  // Section 4: State the Market Gap
-  sections.push(generateMarketGap(currentOffer, marketRangeLow, marketRangeHigh, isAboveMarket));
+  // Section 4: State the Market Gap (skip if offer is above market - don't mention numbers)
+  if (!isAboveMarket) {
+    sections.push(generateMarketGap(currentOffer, marketRangeLow, marketRangeHigh, isAboveMarket));
+  }
 
   // Section 5: The Ask
   sections.push(generateAsk(tone, leverageTier, targetAmount, isAboveMarket));
