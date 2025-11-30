@@ -426,12 +426,18 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
               onClick={() => {
+                const bonusParts = [];
+                if (result.input.bonusPercent) bonusParts.push(`${result.input.bonusPercent}% bonus`);
+                if (result.input.equityDetails) bonusParts.push(result.input.equityDetails);
+                const bonusSummary = bonusParts.join(", ");
+                
                 const params = new URLSearchParams({
                   jobTitle: result.input.jobTitle,
                   companyName: result.input.companyName || "",
                   yearsExperience: String(result.input.yearsExperience),
                   location: result.input.location,
                   currentOffer: String(result.input.baseSalaryOffered),
+                  bonusSummary,
                   marketRangeLow: String(result.marketRange.p25),
                   marketMedian: String(result.marketRange.median),
                   marketRangeHigh: String(result.marketRange.p75),
@@ -447,12 +453,18 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
             </Button>
             <Button
               onClick={() => {
+                const bonusParts = [];
+                if (result.input.bonusPercent) bonusParts.push(`${result.input.bonusPercent}% bonus`);
+                if (result.input.equityDetails) bonusParts.push(result.input.equityDetails);
+                const bonusSummary = bonusParts.join(", ");
+                
                 const params = new URLSearchParams({
                   jobTitle: result.input.jobTitle,
                   companyName: result.input.companyName || "",
                   yearsExperience: String(result.input.yearsExperience),
                   location: result.input.location,
                   currentOffer: String(result.input.baseSalaryOffered),
+                  bonusSummary,
                   marketRangeLow: String(result.marketRange.p25),
                   marketMedian: String(result.marketRange.median),
                   marketRangeHigh: String(result.marketRange.p75),

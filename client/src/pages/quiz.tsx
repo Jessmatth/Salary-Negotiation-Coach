@@ -17,6 +17,7 @@ function getUrlParams() {
     yearsExperience: params.get("yearsExperience") || "",
     location: params.get("location") || "",
     currentOffer: params.get("currentOffer") || "",
+    bonusSummary: params.get("bonusSummary") || "",
     marketRangeLow: params.get("marketRangeLow") || "",
     marketMedian: params.get("marketMedian") || "",
     marketRangeHigh: params.get("marketRangeHigh") || "",
@@ -153,6 +154,7 @@ interface UrlParams {
   yearsExperience: string;
   location: string;
   currentOffer: string;
+  bonusSummary: string;
   marketRangeLow: string;
   marketMedian: string;
   marketRangeHigh: string;
