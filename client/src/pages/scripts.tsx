@@ -116,7 +116,7 @@ export default function Scripts() {
 
   const openInEmail = () => {
     const body = encodeURIComponent(editedBody);
-    window.open(`mailto:?body=${body}`, "_blank");
+    window.location.href = `mailto:?body=${body}`;
   };
 
   const regenerate = async () => {
