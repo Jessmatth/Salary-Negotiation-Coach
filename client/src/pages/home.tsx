@@ -170,7 +170,7 @@ export default function Home() {
 
       <footer className="border-t border-slate-800 py-8 mt-16">
         <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
-          Salary Negotiation Coach helps you negotiate with confidence. Data sourced from BLS and H1B databases.
+          Salary Negotiation Coach helps you negotiate with confidence.
         </div>
       </footer>
     </div>
