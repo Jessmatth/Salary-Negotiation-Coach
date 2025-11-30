@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useScorecard, useFeedback } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 import { scorecardInputSchema, type ScorecardInput, type ScorecardResult } from "@shared/schema";
 import { ArrowLeft, ArrowRight, TrendingUp, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
 
@@ -26,6 +27,13 @@ export default function Scorecard() {
   const [, navigate] = useLocation();
   const [result, setResult] = useState<ScorecardResult | null>(null);
   const scorecard = useScorecard();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = "/api/login";
+    }
+  }, [isAuthenticated, isLoading]);
 
   const form = useForm<ScorecardInput>({
     resolver: zodResolver(scorecardInputSchema),
@@ -53,6 +61,14 @@ export default function Scorecard() {
       });
     }
   };
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   if (result) {
     return <ScorecardResult result={result} onBack={() => setResult(null)} />;

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAggregateStats } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowRight, BarChart3, MessageSquare, Target, TrendingUp, Shield, Zap, LogIn, LogOut } from "lucide-react";
+import { ArrowRight, BarChart3, MessageSquare, Target, TrendingUp, Shield, Zap, LogIn, LogOut, Loader2 } from "lucide-react";
 
 export default function Home() {
   const { data: stats } = useAggregateStats();
@@ -85,7 +85,12 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-              {isAuthenticated ? (
+              {isLoading ? (
+                <Button size="lg" disabled className="bg-slate-700 text-slate-400 px-8 py-6 text-lg font-semibold">
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Loading...
+                </Button>
+              ) : isAuthenticated ? (
                 <>
                   <Link href="/scorecard">
                     <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-emerald-500/25" data-testid="button-check-offer">
@@ -206,7 +211,12 @@ export default function Home() {
             <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
               Our insights come from {stats?.totalRecords?.toLocaleString() || "45,000"}+ real salary records and verified market data. No guessing—just facts.
             </p>
-            {isAuthenticated ? (
+            {isLoading ? (
+              <Button size="lg" disabled className="bg-slate-600 text-slate-400">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                Loading...
+              </Button>
+            ) : isAuthenticated ? (
               <Link href="/scorecard">
                 <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" data-testid="button-get-started">
                   Get Started Free

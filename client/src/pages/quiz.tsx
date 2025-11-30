@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useLeverageScore } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 import { LEVERAGE_QUESTIONS, type LeverageQuizInput, type LeverageResult } from "@shared/schema";
 import { ArrowLeft, ArrowRight, TrendingUp, Loader2, Zap, AlertTriangle, CheckCircle, Target } from "lucide-react";
 
@@ -31,6 +32,13 @@ export default function Quiz() {
   const [result, setResult] = useState<LeverageResult | null>(null);
   const leverageScore = useLeverageScore();
   const urlParams = getUrlParams();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = "/api/login";
+    }
+  }, [isAuthenticated, isLoading]);
 
   const question = LEVERAGE_QUESTIONS[currentQuestion];
   const progress = ((currentQuestion + 1) / LEVERAGE_QUESTIONS.length) * 100;
@@ -59,6 +67,14 @@ export default function Quiz() {
       setCurrentQuestion(currentQuestion - 1);
     }
   };
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   if (result) {
     return <QuizResult result={result} urlParams={urlParams} onRestart={() => { setResult(null); setCurrentQuestion(0); setAnswers({}); }} />;

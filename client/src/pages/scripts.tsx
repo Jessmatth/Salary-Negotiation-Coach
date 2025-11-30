@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useScriptGenerator, useFeedback } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 import { scriptInputSchema, type ScriptInput, type ScriptResult } from "@shared/schema";
 import { ArrowLeft, TrendingUp, Loader2, Copy, Mail, Check, RefreshCw, MessageSquare, Target, ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -63,6 +64,13 @@ export default function Scripts() {
   const [feedbackGiven, setFeedbackGiven] = useState<boolean | null>(null);
   const scriptGenerator = useScriptGenerator();
   const feedback = useFeedback();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = "/api/login";
+    }
+  }, [isAuthenticated, isLoading]);
 
   const handleFeedback = async (isPositive: boolean) => {
     if (!script?.sessionId) return;
@@ -173,6 +181,14 @@ export default function Scripts() {
   };
 
   const formatMoney = (n: number) => `$${n.toLocaleString()}`;
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
