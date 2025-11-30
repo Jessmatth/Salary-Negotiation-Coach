@@ -1,7 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { QueryCompensation, BenchmarkRequest } from "@shared/schema";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import type { 
+  QueryCompensation, 
+  ScorecardInput, 
+  ScorecardResult,
+  LeverageQuizInput,
+  LeverageResult,
+  ScriptInput,
+  ScriptResult,
+} from "@shared/schema";
 
-// API Client
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     ...options,
@@ -19,7 +26,64 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
-// Hooks
+// Scorecard API
+export function useScorecard() {
+  return useMutation({
+    mutationFn: (data: ScorecardInput) =>
+      fetcher<ScorecardResult>("/api/scorecard", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  });
+}
+
+// Leverage Score API
+export function useLeverageScore() {
+  return useMutation({
+    mutationFn: (data: LeverageQuizInput & { currentOffer?: number; sessionId?: string }) =>
+      fetcher<LeverageResult>("/api/leverage-score", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  });
+}
+
+// Script Generator API
+export function useScriptGenerator() {
+  return useMutation({
+    mutationFn: (data: ScriptInput) =>
+      fetcher<ScriptResult>("/api/scripts", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  });
+}
+
+// Job Title Suggestions API
+export function useJobTitleSuggestions(query: string) {
+  return useQuery({
+    queryKey: ["job-titles", query],
+    queryFn: () => fetcher<string[]>(`/api/job-titles?q=${encodeURIComponent(query)}`),
+    enabled: query.length >= 2,
+    staleTime: 30000,
+  });
+}
+
+// Aggregate Stats (for home page)
+export function useAggregateStats() {
+  return useQuery({
+    queryKey: ["analytics", "stats"],
+    queryFn: () =>
+      fetcher<{
+        totalRecords: number;
+        avgSalary: number;
+        uniqueRoles: number;
+        uniqueIndustries: number;
+      }>("/api/analytics/stats"),
+  });
+}
+
+// Legacy endpoints kept for compatibility
 export function useCompensationRecords(query: Partial<QueryCompensation> = {}) {
   const params = new URLSearchParams();
   if (query.search) params.set("search", query.search);
@@ -34,20 +98,7 @@ export function useCompensationRecords(query: Partial<QueryCompensation> = {}) {
   return useQuery({
     queryKey: ["compensation", query],
     queryFn: () =>
-      fetcher<{ records: any[], total: number }>(`/api/compensation?${params.toString()}`),
-  });
-}
-
-export function useAggregateStats() {
-  return useQuery({
-    queryKey: ["analytics", "stats"],
-    queryFn: () =>
-      fetcher<{
-        totalRecords: number;
-        avgSalary: number;
-        uniqueRoles: number;
-        uniqueIndustries: number;
-      }>("/api/analytics/stats"),
+      fetcher<{ records: any[]; total: number }>(`/api/compensation?${params.toString()}`),
   });
 }
 
@@ -71,26 +122,5 @@ export function useRecentRecords(limit: number = 5) {
   return useQuery({
     queryKey: ["analytics", "recent", limit],
     queryFn: () => fetcher<any[]>(`/api/analytics/recent?limit=${limit}`),
-  });
-}
-
-export function useBenchmarkCalculation() {
-  return useMutation({
-    mutationFn: (data: BenchmarkRequest) =>
-      fetcher<{
-        min: number;
-        max: number;
-        median: number;
-        p25: number;
-        p75: number;
-        factors: {
-          industry: number;
-          location: number;
-          experience: number;
-        };
-      }>("/api/benchmark", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
   });
 }

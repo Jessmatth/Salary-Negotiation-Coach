@@ -4,18 +4,18 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Dashboard from "@/pages/dashboard";
-import Dataset from "@/pages/dataset";
-import Benchmarks from "@/pages/benchmarks";
-import Methodology from "@/pages/methodology";
+import Home from "@/pages/home";
+import Scorecard from "@/pages/scorecard";
+import Quiz from "@/pages/quiz";
+import Scripts from "@/pages/scripts";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/dataset" component={Dataset} />
-      <Route path="/benchmarks" component={Benchmarks} />
-      <Route path="/methodology" component={Methodology} />
+      <Route path="/" component={Home} />
+      <Route path="/scorecard" component={Scorecard} />
+      <Route path="/quiz" component={Quiz} />
+      <Route path="/scripts" component={Scripts} />
       <Route component={NotFound} />
     </Switch>
   );
