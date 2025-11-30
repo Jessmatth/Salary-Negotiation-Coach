@@ -81,12 +81,6 @@ Eliminate writing anxiety by providing a safe, customizable, ready-to-send negot
 └── README.md
 ```
 
-## Data Sources
-
-The market salary data is compiled from government sources including:
-- Bureau of Labor Statistics (BLS)
-- H1B filings and disclosures
-
 ## License
 
 MIT
