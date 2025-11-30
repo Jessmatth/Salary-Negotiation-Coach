@@ -334,10 +334,10 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
           <Card className="bg-slate-800/50 border-slate-700 mb-6">
             <CardContent className="p-8">
               <div className="text-center mb-8">
-                <div className="relative w-48 h-24 mx-auto mb-4">
-                  <svg viewBox="0 0 200 100" className="w-full h-full">
+                <div className="relative w-48 h-28 mx-auto mb-4">
+                  <svg viewBox="0 0 200 110" className="w-full h-full overflow-visible">
                     <path
-                      d="M 10 90 A 80 80 0 0 1 190 90"
+                      d="M 10 100 A 80 80 0 0 1 190 100"
                       fill="none"
                       stroke="#334155"
                       strokeWidth="12"
@@ -353,7 +353,7 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
                       </linearGradient>
                     </defs>
                     <path
-                      d="M 10 90 A 80 80 0 0 1 190 90"
+                      d="M 10 100 A 80 80 0 0 1 190 100"
                       fill="none"
                       stroke="url(#gaugeGradient)"
                       strokeWidth="12"
@@ -362,19 +362,19 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
                     />
                     <circle
                       cx="100"
-                      cy="90"
+                      cy="100"
                       r="8"
                       fill="white"
                       style={{
                         transform: `rotate(${getGaugeRotation(result.position.percentile)}deg)`,
-                        transformOrigin: "100px 90px",
+                        transformOrigin: "100px 100px",
                       }}
                     >
                       <animateTransform
                         attributeName="transform"
                         type="rotate"
-                        from="-90 100 90"
-                        to={`${getGaugeRotation(result.position.percentile)} 100 90`}
+                        from="-90 100 100"
+                        to={`${getGaugeRotation(result.position.percentile)} 100 100`}
                         dur="1s"
                         fill="freeze"
                       />
