@@ -8,26 +8,47 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useScriptGenerator } from "@/lib/api";
 import { scriptInputSchema, type ScriptInput, type ScriptResult } from "@shared/schema";
-import { ArrowLeft, TrendingUp, Loader2, Copy, Mail, Check, RefreshCw, MessageSquare } from "lucide-react";
+import { ArrowLeft, TrendingUp, Loader2, Copy, Mail, Check, RefreshCw, MessageSquare, Target } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const TONE_LABELS = {
-  polite: { label: "Polite", description: "Warm and appreciative tone" },
-  professional: { label: "Professional", description: "Balanced and confident" },
-  aggressive: { label: "Assertive", description: "Direct and firm" },
+  polite: { label: "Polite", description: "Warm, hedging language - best for low leverage" },
+  professional: { label: "Professional", description: "Direct but respectful - balanced approach" },
+  aggressive: { label: "Assertive", description: "Clear anchoring with deadlines - high leverage" },
+} as const;
+
+const LEVERAGE_LABELS = {
+  low: { label: "Low", description: "Few alternatives, need this job", color: "text-amber-400" },
+  moderate: { label: "Moderate", description: "Some options, flexible timeline", color: "text-blue-400" },
+  high: { label: "High", description: "Multiple offers, strong position", color: "text-emerald-400" },
+} as const;
+
+const SCENARIO_LABELS = {
+  external: "New Job Offer",
+  internal_raise: "Internal Raise/Promotion", 
+  retention: "Retention/Counter Offer",
 } as const;
 
 function getUrlParams() {
   const params = new URLSearchParams(window.location.search);
+  const marketMedian = params.get("marketMedian") ? Number(params.get("marketMedian")) : 100000;
   return {
     jobTitle: params.get("jobTitle") || "",
     companyName: params.get("companyName") || "",
     yearsExperience: params.get("yearsExperience") ? Number(params.get("yearsExperience")) : 5,
     location: params.get("location") || "",
     currentOffer: params.get("currentOffer") ? Number(params.get("currentOffer")) : 100000,
-    marketMedian: params.get("marketMedian") ? Number(params.get("marketMedian")) : 120000,
+    bonusSummary: params.get("bonusSummary") || "",
+    marketRangeLow: params.get("marketRangeLow") ? Number(params.get("marketRangeLow")) : Math.round(marketMedian * 0.85),
+    marketRangeHigh: params.get("marketRangeHigh") ? Number(params.get("marketRangeHigh")) : Math.round(marketMedian * 1.15),
+    marketMedian,
+    leverageTier: (params.get("leverageTier") as "low" | "moderate" | "high") || "moderate",
+    suggestedRangeMinPercent: params.get("suggestedRangeMinPercent") ? Number(params.get("suggestedRangeMinPercent")) : 5,
+    suggestedRangeMaxPercent: params.get("suggestedRangeMaxPercent") ? Number(params.get("suggestedRangeMaxPercent")) : 15,
+    scenarioType: (params.get("scenarioType") as "external" | "internal_raise" | "retention") || "external",
     askAmount: undefined as number | undefined,
   };
 }
@@ -37,10 +58,12 @@ export default function Scripts() {
   const [editedBody, setEditedBody] = useState("");
   const [copied, setCopied] = useState(false);
   const [tone, setTone] = useState<"polite" | "professional" | "aggressive">("professional");
+  const [leverageTier, setLeverageTier] = useState<"low" | "moderate" | "high">("moderate");
+  const [scenarioType, setScenarioType] = useState<"external" | "internal_raise" | "retention">("external");
   const scriptGenerator = useScriptGenerator();
 
-  const form = useForm<Omit<ScriptInput, "tone">>({
-    resolver: zodResolver(scriptInputSchema.omit({ tone: true })),
+  const form = useForm<Omit<ScriptInput, "tone" | "leverageTier" | "scenarioType">>({
+    resolver: zodResolver(scriptInputSchema.omit({ tone: true, leverageTier: true, scenarioType: true })),
     defaultValues: getUrlParams(),
   });
 
@@ -48,12 +71,14 @@ export default function Scripts() {
     const urlParams = getUrlParams();
     if (urlParams.jobTitle) {
       form.reset(urlParams);
+      setLeverageTier(urlParams.leverageTier);
+      setScenarioType(urlParams.scenarioType);
     }
   }, []);
 
-  const onSubmit = async (data: Omit<ScriptInput, "tone">) => {
+  const onSubmit = async (data: Omit<ScriptInput, "tone" | "leverageTier" | "scenarioType">) => {
     try {
-      const res = await scriptGenerator.mutateAsync({ ...data, tone });
+      const res = await scriptGenerator.mutateAsync({ ...data, tone, leverageTier, scenarioType });
       setScript(res);
       setEditedBody(res.body);
     } catch (error) {
@@ -69,7 +94,7 @@ export default function Scripts() {
     if (script) {
       try {
         const formData = form.getValues();
-        const res = await scriptGenerator.mutateAsync({ ...formData, tone: newTone });
+        const res = await scriptGenerator.mutateAsync({ ...formData, tone: newTone, leverageTier, scenarioType });
         setScript(res);
         setEditedBody(res.body);
       } catch (error) {
@@ -90,21 +115,22 @@ export default function Scripts() {
   };
 
   const openInEmail = () => {
-    const subject = encodeURIComponent(script?.subject || "Regarding my offer");
     const body = encodeURIComponent(editedBody);
-    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+    window.open(`mailto:?body=${body}`, "_blank");
   };
 
   const regenerate = async () => {
     const formData = form.getValues();
     try {
-      const res = await scriptGenerator.mutateAsync({ ...formData, tone });
+      const res = await scriptGenerator.mutateAsync({ ...formData, tone, leverageTier, scenarioType });
       setScript(res);
       setEditedBody(res.body);
     } catch (error) {
       console.error("Failed to regenerate script:", error);
     }
   };
+
+  const formatMoney = (n: number) => `$${n.toLocaleString()}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -128,7 +154,7 @@ export default function Scripts() {
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">What to Say</h1>
-            <p className="text-slate-400">Generate a personalized negotiation email</p>
+            <p className="text-slate-400">Generate a personalized negotiation script (body only - add your own greeting)</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -141,6 +167,20 @@ export default function Scripts() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-slate-200">Scenario Type</Label>
+                    <Select value={scenarioType} onValueChange={(v) => setScenarioType(v as typeof scenarioType)}>
+                      <SelectTrigger className="bg-slate-900 border-slate-600 text-white" data-testid="select-scenario">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="external">{SCENARIO_LABELS.external}</SelectItem>
+                        <SelectItem value="internal_raise">{SCENARIO_LABELS.internal_raise}</SelectItem>
+                        <SelectItem value="retention">{SCENARIO_LABELS.retention}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="jobTitle" className="text-slate-200">Job Title</Label>
@@ -205,33 +245,84 @@ export default function Scripts() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="bonusSummary" className="text-slate-200">Bonus/Equity (optional)</Label>
+                      <Input
+                        id="bonusSummary"
+                        {...form.register("bonusSummary")}
+                        placeholder="e.g., 10% bonus, 5k RSUs"
+                        className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
+                        data-testid="input-bonus-summary"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="marketRangeLow" className="text-slate-200">Market Low</Label>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                        <Input
+                          id="marketRangeLow"
+                          type="number"
+                          {...form.register("marketRangeLow", { valueAsNumber: true })}
+                          className="bg-slate-900 border-slate-600 text-white pl-6 text-sm"
+                          data-testid="input-market-low"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
                       <Label htmlFor="marketMedian" className="text-slate-200">Market Median</Label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
                         <Input
                           id="marketMedian"
                           type="number"
                           {...form.register("marketMedian", { valueAsNumber: true })}
-                          className="bg-slate-900 border-slate-600 text-white pl-8"
+                          className="bg-slate-900 border-slate-600 text-white pl-6 text-sm"
                           data-testid="input-market-median"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="marketRangeHigh" className="text-slate-200">Market High</Label>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                        <Input
+                          id="marketRangeHigh"
+                          type="number"
+                          {...form.register("marketRangeHigh", { valueAsNumber: true })}
+                          className="bg-slate-900 border-slate-600 text-white pl-6 text-sm"
+                          data-testid="input-market-high"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="askAmount" className="text-slate-200">Your Ask (optional)</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
-                      <Input
-                        id="askAmount"
-                        type="number"
-                        {...form.register("askAmount", { valueAsNumber: true })}
-                        placeholder="Leave blank for auto-calculation"
-                        className="bg-slate-900 border-slate-600 text-white pl-8 placeholder:text-slate-500"
-                        data-testid="input-ask-amount"
-                      />
+                  <div className="space-y-3 pt-4 border-t border-slate-700">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-slate-200">Your Leverage</Label>
+                      <span className={`font-medium ${LEVERAGE_LABELS[leverageTier].color}`}>
+                        {LEVERAGE_LABELS[leverageTier].label}
+                      </span>
                     </div>
+                    <div className="flex gap-2">
+                      {(["low", "moderate", "high"] as const).map((tier) => (
+                        <Button
+                          key={tier}
+                          type="button"
+                          variant={leverageTier === tier ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setLeverageTier(tier)}
+                          className={leverageTier === tier 
+                            ? "flex-1 bg-slate-700 text-white" 
+                            : "flex-1 border-slate-600 text-slate-400 hover:bg-slate-800"}
+                          data-testid={`button-leverage-${tier}`}
+                        >
+                          {LEVERAGE_LABELS[tier].label}
+                        </Button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-slate-500">{LEVERAGE_LABELS[leverageTier].description}</p>
                   </div>
 
                   <div className="space-y-4 pt-4 border-t border-slate-700">
@@ -253,6 +344,21 @@ export default function Scripts() {
                       <span>Assertive</span>
                     </div>
                     <p className="text-sm text-slate-400">{TONE_LABELS[tone].description}</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="askAmount" className="text-slate-200">Your Ask (optional - auto-calculated if blank)</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+                      <Input
+                        id="askAmount"
+                        type="number"
+                        {...form.register("askAmount", { valueAsNumber: true })}
+                        placeholder="Leave blank for smart calculation"
+                        className="bg-slate-900 border-slate-600 text-white pl-8 placeholder:text-slate-500"
+                        data-testid="input-ask-amount"
+                      />
+                    </div>
                   </div>
 
                   <Button
@@ -316,12 +422,15 @@ export default function Scripts() {
               <CardContent>
                 {script ? (
                   <div className="space-y-4">
-                    <div>
-                      <Label className="text-slate-400 text-sm">Subject</Label>
-                      <div className="text-white font-medium mt-1" data-testid="text-subject">{script.subject}</div>
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-900/30 border border-emerald-700/50">
+                      <Target className="w-5 h-5 text-emerald-400" />
+                      <span className="text-slate-300">Target Ask:</span>
+                      <span className="text-emerald-400 font-bold text-lg" data-testid="text-target-amount">
+                        {formatMoney(script.targetAmount)}
+                      </span>
                     </div>
                     <div>
-                      <Label className="text-slate-400 text-sm">Email Body</Label>
+                      <Label className="text-slate-400 text-sm">Email Body (add your own greeting & sign-off)</Label>
                       <Textarea
                         value={editedBody}
                         onChange={(e) => setEditedBody(e.target.value)}
@@ -330,7 +439,7 @@ export default function Scripts() {
                       />
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <span className="px-2 py-1 rounded bg-slate-700">{script.tone}</span>
+                      <span className="px-2 py-1 rounded bg-slate-700">{TONE_LABELS[script.tone].label}</span>
                       <span>{script.contextSummary}</span>
                     </div>
                   </div>
@@ -338,7 +447,10 @@ export default function Scripts() {
                   <div className="flex flex-col items-center justify-center h-[400px] text-center">
                     <MessageSquare className="w-12 h-12 text-slate-600 mb-4" />
                     <p className="text-slate-500">
-                      Fill in the details on the left and click "Generate Script" to create your personalized negotiation email.
+                      Fill in the details and click "Generate Script" to create your personalized negotiation email body.
+                    </p>
+                    <p className="text-slate-600 text-sm mt-2">
+                      You'll add your own greeting and sign-off.
                     </p>
                   </div>
                 )}

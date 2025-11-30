@@ -441,7 +441,9 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
                   yearsExperience: String(result.input.yearsExperience),
                   location: result.input.location,
                   currentOffer: String(result.input.baseSalaryOffered),
+                  marketRangeLow: String(result.marketRange.p25),
                   marketMedian: String(result.marketRange.median),
+                  marketRangeHigh: String(result.marketRange.p75),
                 });
                 navigate(`/scripts?${params.toString()}`);
               }}
