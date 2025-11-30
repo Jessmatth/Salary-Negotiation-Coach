@@ -19,13 +19,13 @@ export default function Home() {
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/scorecard" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scorecard-nav">
-              Scorecard
+              Am I Underpaid?
             </Link>
             <Link href="/quiz" className="text-slate-300 hover:text-white transition-colors" data-testid="link-quiz-nav">
-              Leverage Quiz
+              How Hard Can I Push?
             </Link>
             <Link href="/scripts" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scripts-nav">
-              Scripts
+              What Should I Say?
             </Link>
           </nav>
         </div>
@@ -40,11 +40,11 @@ export default function Home() {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Is This a <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Good Offer</span>?
+              Am I <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Underpaid</span>?
             </h1>
             
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Get instant clarity on your job offer. Compare against real market data, calculate your negotiation leverage, and generate personalized scripts.
+              Find out in seconds. Compare your offer to real market data, discover how hard you can push, and get the exact words to say.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -56,7 +56,7 @@ export default function Home() {
               </Link>
               <Link href="/quiz">
                 <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-take-quiz">
-                  Take Leverage Quiz
+                  How Hard Can I Push?
                 </Button>
               </Link>
             </div>
@@ -70,9 +70,9 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
                   <Target className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Offer Scorecard</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">Am I Underpaid?</h3>
                 <p className="text-slate-400">
-                  See exactly where your offer lands compared to {stats?.uniqueRoles?.toLocaleString() || "11,000"}+ roles. Get a clear verdict: underpaid, fair, or above market.
+                  Compare your offer to {stats?.uniqueRoles?.toLocaleString() || "11,000"}+ roles. See exactly where you stand: underpaid, fair, or above market.
                 </p>
               </CardContent>
             </Card>
@@ -82,9 +82,9 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center mb-4 group-hover:bg-teal-500/20 transition-colors">
                   <Zap className="w-6 h-6 text-teal-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Leverage Calculator</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">How Hard Can I Push?</h3>
                 <p className="text-slate-400">
-                  Answer 8 quick questions to discover your negotiation power. Get a 0-100 score and tailored tactics.
+                  Answer 8 quick questions to calculate your negotiation power. Get a 0-100 leverage score and tailored tactics.
                 </p>
               </CardContent>
             </Card>
@@ -94,9 +94,9 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4 group-hover:bg-cyan-500/20 transition-colors">
                   <MessageSquare className="w-6 h-6 text-cyan-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Script Generator</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">What Should I Say?</h3>
                 <p className="text-slate-400">
-                  Generate ready-to-send negotiation emails tuned to your leverage level and preferred tone.
+                  Generate a ready-to-send negotiation email tuned to your situation and preferred tone.
                 </p>
               </CardContent>
             </Card>
@@ -116,8 +116,8 @@ export default function Home() {
                   1
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">Enter Your Offer Details</h3>
-                  <p className="text-slate-400">Share your job title, location, experience, and the salary they offered. We'll compare it to real market data.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">Am I Underpaid?</h3>
+                  <p className="text-slate-400">Enter your offer details and instantly see how it compares to real market data from 45,000+ salary records.</p>
                 </div>
               </div>
 
@@ -126,8 +126,8 @@ export default function Home() {
                   2
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">Discover Your Leverage</h3>
-                  <p className="text-slate-400">Take our 8-question quiz to calculate your negotiation power score. Learn what tactics work best for your situation.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">How Hard Can I Push?</h3>
+                  <p className="text-slate-400">Answer 8 quick questions to calculate your leverage score. Learn exactly how aggressive you can be.</p>
                 </div>
               </div>
 
@@ -136,8 +136,8 @@ export default function Home() {
                   3
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">Send Your Counter</h3>
-                  <p className="text-slate-400">Generate a professionally-crafted negotiation email tailored to your specific situation and leverage level.</p>
+                  <h3 className="text-lg font-semibold text-white mb-1">What Should I Say?</h3>
+                  <p className="text-slate-400">Generate a professionally-crafted negotiation email tailored to your situation and preferred tone.</p>
                 </div>
               </div>
             </div>

@@ -79,8 +79,8 @@ export default function Scorecard() {
           </Link>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Offer Scorecard</h1>
-            <p className="text-slate-400">Enter your offer details to see how it compares to the market</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Am I Underpaid?</h1>
+            <p className="text-slate-400">Enter your offer details to find out where you stand</p>
           </div>
 
           <Card className="bg-slate-800/50 border-slate-700">
