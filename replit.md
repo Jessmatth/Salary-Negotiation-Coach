@@ -1,8 +1,14 @@
-# CompBench - US Compensation Benchmark Database
+# SalaryCoach - Salary Negotiation Coach
 
 ## Overview
 
-CompBench is a professional compensation benchmarking tool that aggregates salary data from multiple authoritative sources including the Bureau of Labor Statistics (BLS), O*NET, H1B filings, and commercial platforms. The application provides users with searchable compensation data, analytics dashboards, and a benchmarking calculator to help professionals understand market rates for various roles across industries, locations, and experience levels.
+SalaryCoach is a salary negotiation coaching tool that helps professionals evaluate job offers and negotiate confidently. The app provides three core features:
+
+1. **Offer Scorecard** - Compares user salary offers against 45,000+ real market data points, showing percentile position and market comparison
+2. **Leverage Quiz** - An 8-question assessment that calculates a 0-100 negotiation power score with tactical recommendations
+3. **Script Generator** - Creates customizable negotiation emails with tone adjustment (Polite/Professional/Assertive)
+
+The underlying data comes from government sources including Bureau of Labor Statistics (BLS) and H1B filings.
 
 ## User Preferences
 
@@ -14,75 +20,70 @@ Preferred communication style: Simple, everyday language.
 
 **Framework**: React with TypeScript, built using Vite for development and production builds.
 
-**UI Component Library**: Shadcn UI (New York style) with Radix UI primitives, providing a comprehensive set of accessible, customizable components. The UI follows a design system with CSS variables for theming and uses Tailwind CSS for styling.
+**UI Component Library**: Shadcn UI (New York style) with Radix UI primitives. Dark theme with slate/emerald color palette designed for a professional, trustworthy aesthetic.
 
-**Routing**: Wouter for client-side routing, providing a lightweight alternative to React Router.
+**Routing**: Wouter for client-side routing with the following pages:
+- `/` - Home: Landing page with "Is This a Good Offer?" CTA
+- `/scorecard` - Offer Scorecard: Form intake and results with gauge visualization
+- `/quiz` - Leverage Quiz: Single-question-per-screen flow with progress bar
+- `/scripts` - Script Generator: Tone slider with editable email template
 
-**State Management**: TanStack Query (React Query) for server state management, caching, and synchronization. No global client state manager is used; component state is handled locally with React hooks.
+**State Management**: TanStack Query for server state. Local component state with React hooks.
 
-**Form Handling**: React Hook Form with Zod for schema validation and type-safe forms.
-
-**Data Visualization**: Recharts library for rendering charts and graphs on the dashboard and analytics pages.
-
-**Key Pages**:
-- Dashboard: Overview with aggregate statistics and visualizations
-- Dataset Explorer: Searchable table of compensation records with filtering
-- Benchmark Tool: Form-based calculator for personalized compensation estimates
-- Methodology: Documentation of data sources and collection strategy
+**Form Handling**: React Hook Form with Zod for schema validation (using `z.coerce.number()` for numeric inputs).
 
 ### Backend Architecture
 
 **Server Framework**: Express.js running on Node.js with TypeScript.
 
-**API Design**: RESTful API with endpoints for querying compensation records, analytics, and benchmark calculations. Routes are centralized in `server/routes.ts`.
+**API Endpoints**:
+- `POST /api/scorecard` - Accepts offer details, returns market comparison with percentile position
+- `POST /api/leverage-score` - Scores 8 quiz questions using weighted rubric, returns 0-100 score
+- `POST /api/scripts` - Generates tone-adjusted negotiation email templates
+- `GET /api/job-titles` - Autocomplete suggestions for job titles
+- Legacy analytics endpoints for backward compatibility
 
-**Build Strategy**: The application uses esbuild to bundle server code and Vite to build the client, with selected dependencies bundled to reduce cold start times (specified in the allowlist in `script/build.ts`).
-
-**Development Mode**: Hot module replacement (HMR) via Vite middleware integrated into Express server during development.
-
-**Static File Serving**: Production builds serve the compiled client application from the `dist/public` directory.
+**Negotiation Logic** (`shared/negotiation-logic.ts`):
+- Leverage scoring algorithm with weighted rubric for 8 factors
+- Market position calculation using percentile bands
+- Script generation with tone variants (polite, professional, aggressive)
+- Narrative generation based on market position
 
 ### Data Storage
 
-**Database**: PostgreSQL accessed via Neon's serverless driver with WebSocket support for edge compatibility.
+**Database**: PostgreSQL via Neon's serverless driver.
 
-**ORM**: Drizzle ORM for type-safe database queries and schema management. Schema is defined in `shared/schema.ts` and migrations are stored in the `migrations` directory.
+**ORM**: Drizzle ORM with schema in `shared/schema.ts`.
 
-**Database Schema**: Single primary table `compensation_records` containing:
-- Job information (title, SOC code, industry NAICS, company size/type)
-- Location data (state, MSA, cost of living index, remote eligibility)
-- Compensation metrics (salary ranges, total compensation, pay type)
-- Requirements (experience, education, skills, management level)
-- Metadata (data source, confidence score, sample size, timestamps)
+**Database Tables**:
+1. `compensation_records` - 45,000+ salary records with:
+   - Job title, SOC code, industry, company size/type
+   - Location (state, MSA, cost of living index)
+   - Salary ranges (min, median, max, total comp)
+   - Experience, education, skills, management level
+   - Data source, confidence score, sample size
 
-**Data Seeding**: Realistic seed data generated from market research (in `server/seed.ts`) includes major tech hubs, various industries, and role levels with appropriate salary ranges adjusted for cost of living.
+2. `offer_evaluations` - Stores user scorecard sessions with offer details and results
 
-### Data Collection Strategy
+3. `quiz_responses` - Stores leverage quiz answers and calculated scores
 
-The application is designed to aggregate data from four primary source categories:
+### Key Files
 
-1. **Government Sources** (BLS OEWS, H1B Database): High-reliability official wage statistics
-2. **Commercial APIs** (Glassdoor, Levels.fyi, Payscale): Crowdsourced and verified compensation data
-3. **Job Postings**: Salary ranges from Indeed/LinkedIn enabled by pay transparency laws
-4. **O*NET Database**: Job descriptions and skill requirements linked to BLS data
-
-Each record includes confidence scoring and sample size tracking to indicate data reliability.
+- `shared/schema.ts` - Database schema and Zod validation schemas
+- `shared/negotiation-logic.ts` - Leverage scoring and script generation logic
+- `server/storage.ts` - Database queries including market range percentile calculations
+- `server/routes.ts` - API endpoint handlers
+- `client/src/pages/home.tsx` - Landing page
+- `client/src/pages/scorecard.tsx` - Offer evaluation form and results
+- `client/src/pages/quiz.tsx` - 8-question leverage assessment
+- `client/src/pages/scripts.tsx` - Email script generator with tone slider
 
 ### External Dependencies
 
-**Database Provider**: Neon PostgreSQL (serverless) - connection configured via `DATABASE_URL` environment variable.
+**Database Provider**: Neon PostgreSQL (serverless) - connection via `DATABASE_URL`.
 
-**UI Component System**: Radix UI primitives for accessible, unstyled components customized with Tailwind CSS.
+**UI Components**: Radix UI primitives + Tailwind CSS styling.
 
-**Icon Library**: Lucide React for consistent iconography throughout the application.
+**Icon Library**: Lucide React.
 
-**Session Management**: Express-session with connect-pg-simple for PostgreSQL-backed sessions (configured but not actively used in current implementation).
-
-**Development Tools**:
-- Replit-specific Vite plugins for cartographer and dev banner
-- Custom meta images plugin for OpenGraph/Twitter card image handling
-- Runtime error overlay for development debugging
-
-**Type Safety**: Zod for runtime validation and drizzle-zod for deriving Zod schemas from database schema definitions, ensuring type consistency across client, server, and database layers.
-
-**Styling**: Tailwind CSS with PostCSS for processing, custom theme configuration using CSS variables for consistent theming, and class-variance-authority for component variant management.
+**Type Safety**: Zod for runtime validation with `z.coerce.number()` for form inputs.

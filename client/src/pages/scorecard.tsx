@@ -46,8 +46,11 @@ export default function Scorecard() {
     try {
       const res = await scorecard.mutateAsync(data);
       setResult(res);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to calculate scorecard:", error);
+      form.setError("root", { 
+        message: error?.message || "Failed to analyze offer. Please try again." 
+      });
     }
   };
 
@@ -227,6 +230,12 @@ export default function Scorecard() {
                     />
                   </div>
                 </div>
+
+                {form.formState.errors.root && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-400" data-testid="error-message">
+                    {form.formState.errors.root.message}
+                  </div>
+                )}
 
                 <Button
                   type="submit"

@@ -100,12 +100,12 @@ export type InsertCompensationRecord = z.infer<typeof insertCompensationRecordSc
 export const scorecardInputSchema = z.object({
   jobTitle: z.string().min(1, "Job title is required"),
   companyName: z.string().optional(),
-  yearsExperience: z.number().min(0).max(40),
+  yearsExperience: z.coerce.number().min(0).max(40),
   seniorityLevel: z.enum(["Junior", "Mid", "Senior", "Lead", "Director", "VP", "C-Suite"]),
   location: z.string().min(1, "Location is required"),
   isRemote: z.boolean().default(false),
-  baseSalaryOffered: z.number().min(20000).max(2000000),
-  bonusPercent: z.number().min(0).max(100).optional(),
+  baseSalaryOffered: z.coerce.number().min(20000).max(2000000),
+  bonusPercent: z.coerce.number().min(0).max(100).optional().nullable().transform(v => v ?? undefined),
   equityDetails: z.string().optional(),
 });
 export type ScorecardInput = z.infer<typeof scorecardInputSchema>;
@@ -167,14 +167,14 @@ export type LeverageResult = z.infer<typeof leverageResultSchema>;
 export const scriptInputSchema = z.object({
   jobTitle: z.string(),
   companyName: z.string().optional(),
-  yearsExperience: z.number(),
+  yearsExperience: z.coerce.number(),
   location: z.string(),
-  currentOffer: z.number(),
-  marketMedian: z.number(),
-  leverageScore: z.number().optional(),
+  currentOffer: z.coerce.number(),
+  marketMedian: z.coerce.number(),
+  leverageScore: z.coerce.number().optional(),
   leverageTier: z.enum(["low", "moderate", "high"]).optional(),
   tone: z.enum(["polite", "professional", "aggressive"]),
-  askAmount: z.number().optional(),
+  askAmount: z.coerce.number().optional().nullable().transform(v => v ?? undefined),
 });
 export type ScriptInput = z.infer<typeof scriptInputSchema>;
 
