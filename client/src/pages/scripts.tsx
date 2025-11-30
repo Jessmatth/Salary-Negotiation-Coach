@@ -114,9 +114,32 @@ export default function Scripts() {
     }
   };
 
-  const openInEmail = () => {
+  const openInEmail = async () => {
     const body = encodeURIComponent(editedBody);
-    window.location.href = `mailto:?body=${body}`;
+    const mailtoLink = `mailto:?body=${body}`;
+    
+    // Try to open email client
+    const link = document.createElement('a');
+    link.href = mailtoLink;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Also copy to clipboard as fallback
+    try {
+      await navigator.clipboard.writeText(editedBody);
+      toast({ 
+        title: "Script copied!", 
+        description: "If email didn't open, paste the script into your email manually."
+      });
+    } catch {
+      toast({ 
+        title: "Open your email app", 
+        description: "Paste your script into the email body."
+      });
+    }
   };
 
   const regenerate = async () => {
