@@ -2,10 +2,12 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAggregateStats } from "@/lib/api";
-import { ArrowRight, BarChart3, MessageSquare, Target, TrendingUp, Shield, Zap } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { ArrowRight, BarChart3, MessageSquare, Target, TrendingUp, Shield, Zap, LogIn, LogOut } from "lucide-react";
 
 export default function Home() {
   const { data: stats } = useAggregateStats();
+  const { user, isLoading, isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -18,15 +20,50 @@ export default function Home() {
             <span className="font-bold text-xl text-white">Salary Negotiation Coach</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/scorecard" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scorecard-nav">
-              Evaluate My Offer
-            </Link>
-            <Link href="/scripts" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scripts-nav">
-              What to Say
-            </Link>
-            <Link href="/quiz" className="text-slate-300 hover:text-white transition-colors" data-testid="link-quiz-nav">
-              How Hard to Push
-            </Link>
+            {isAuthenticated && (
+              <>
+                <Link href="/scorecard" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scorecard-nav">
+                  Evaluate My Offer
+                </Link>
+                <Link href="/scripts" className="text-slate-300 hover:text-white transition-colors" data-testid="link-scripts-nav">
+                  What to Say
+                </Link>
+                <Link href="/quiz" className="text-slate-300 hover:text-white transition-colors" data-testid="link-quiz-nav">
+                  How Hard to Push
+                </Link>
+              </>
+            )}
+            {!isLoading && (
+              isAuthenticated ? (
+                <div className="flex items-center gap-3">
+                  {user?.profileImageUrl && (
+                    <img 
+                      src={user.profileImageUrl} 
+                      alt="" 
+                      className="w-8 h-8 rounded-full object-cover border border-slate-600"
+                      data-testid="img-user-avatar"
+                    />
+                  )}
+                  <a 
+                    href="/api/logout" 
+                    className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
+                    data-testid="button-logout"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log out
+                  </a>
+                </div>
+              ) : (
+                <a 
+                  href="/api/login"
+                  className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  data-testid="button-login"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Log in
+                </a>
+              )
+            )}
           </nav>
         </div>
       </header>
@@ -48,22 +85,33 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-              <Link href="/scorecard">
-                <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-emerald-500/25" data-testid="button-check-offer">
-                  Evaluate My Offer
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="/scripts">
-                <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-what-to-say">
-                  What to Say
-                </Button>
-              </Link>
-              <Link href="/quiz">
-                <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-take-quiz">
-                  How Hard to Push
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link href="/scorecard">
+                    <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-emerald-500/25" data-testid="button-check-offer">
+                      Evaluate My Offer
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                  <Link href="/scripts">
+                    <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-what-to-say">
+                      What to Say
+                    </Button>
+                  </Link>
+                  <Link href="/quiz">
+                    <Button size="lg" variant="outline" className="border-slate-600 text-slate-200 hover:bg-slate-800 px-8 py-6 text-lg" data-testid="button-take-quiz">
+                      How Hard to Push
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <a href="/api/login">
+                  <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-emerald-500/25" data-testid="button-get-started-login">
+                    Get Started Free
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </a>
+              )}
             </div>
           </div>
         </section>
@@ -158,12 +206,21 @@ export default function Home() {
             <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
               Our insights come from {stats?.totalRecords?.toLocaleString() || "45,000"}+ real salary records and verified market data. No guessing—just facts.
             </p>
-            <Link href="/scorecard">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" data-testid="button-get-started">
-                Get Started Free
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <Link href="/scorecard">
+                <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" data-testid="button-get-started">
+                  Get Started Free
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+            ) : (
+              <a href="/api/login">
+                <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" data-testid="button-get-started">
+                  Get Started Free
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </a>
+            )}
           </div>
         </section>
       </main>
