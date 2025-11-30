@@ -156,7 +156,7 @@ export default function Home() {
               Powered by Real Data
             </h2>
             <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
-              Our insights come from {stats?.totalRecords?.toLocaleString() || "45,000"}+ real salary records sourced from government databases (BLS, H1B filings) and verified market data. No guessing—just facts.
+              Our insights come from {stats?.totalRecords?.toLocaleString() || "45,000"}+ real salary records and verified market data. No guessing—just facts.
             </p>
             <Link href="/scorecard">
               <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" data-testid="button-get-started">
