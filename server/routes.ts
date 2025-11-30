@@ -8,6 +8,7 @@ import {
   scorecardInputSchema,
   leverageQuizInputSchema,
   scriptInputSchema,
+  feedbackInputSchema,
 } from "@shared/schema";
 import { 
   calculateLeverageScore,
@@ -167,6 +168,22 @@ export async function registerRoutes(
       } else {
         console.error("Error generating script:", error);
         res.status(500).json({ error: "Failed to generate script" });
+      }
+    }
+  });
+  
+  // User Feedback - Thumbs up/down
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const input = feedbackInputSchema.parse(req.body);
+      await storage.saveFeedback(input);
+      res.json({ success: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid feedback", details: error.errors });
+      } else {
+        console.error("Error saving feedback:", error);
+        res.status(500).json({ error: "Failed to save feedback" });
       }
     }
   });
