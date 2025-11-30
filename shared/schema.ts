@@ -87,6 +87,15 @@ export const quizResponses = pgTable("quiz_responses", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// User Feedback Table - stores thumbs up/down feedback
+export const userFeedback = pgTable("user_feedback", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  feedbackType: text("feedback_type").notNull(), // "scorecard" or "script"
+  rating: text("rating").notNull(), // "up" or "down"
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Zod Schemas for existing compensation records
 export const insertCompensationRecordSchema = createInsertSchema(compensationRecords).omit({
   id: true,
@@ -191,6 +200,14 @@ export const scriptResultSchema = z.object({
   contextSummary: z.string(),
 });
 export type ScriptResult = z.infer<typeof scriptResultSchema>;
+
+// Feedback Input Schema
+export const feedbackInputSchema = z.object({
+  sessionId: z.string(),
+  feedbackType: z.enum(["scorecard", "script"]),
+  rating: z.enum(["up", "down"]),
+});
+export type FeedbackInput = z.infer<typeof feedbackInputSchema>;
 
 // Legacy query schemas (kept for backward compatibility)
 export const queryCompensationSchema = z.object({
