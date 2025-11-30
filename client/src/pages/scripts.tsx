@@ -353,7 +353,9 @@ export default function Scripts() {
                       <Input
                         id="askAmount"
                         type="number"
-                        {...form.register("askAmount", { valueAsNumber: true })}
+                        {...form.register("askAmount", { 
+                          setValueAs: (v) => v === "" || v === null || v === undefined ? undefined : Number(v)
+                        })}
                         placeholder="Leave blank for smart calculation"
                         className="bg-slate-900 border-slate-600 text-white pl-8 placeholder:text-slate-500"
                         data-testid="input-ask-amount"

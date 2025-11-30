@@ -179,7 +179,7 @@ export const scriptInputSchema = z.object({
   suggestedRangeMaxPercent: z.coerce.number().default(15),
   scenarioType: z.enum(["external", "internal_raise", "retention"]).default("external"),
   tone: z.enum(["polite", "professional", "aggressive"]),
-  askAmount: z.coerce.number().optional().nullable().transform(v => v ?? undefined),
+  askAmount: z.coerce.number().optional().nullable().transform(v => (v === null || v === undefined || Number.isNaN(v)) ? undefined : v),
 });
 export type ScriptInput = z.infer<typeof scriptInputSchema>;
 
