@@ -163,7 +163,7 @@ interface ScriptContext {
   location: string;
   currentOffer: number;
   marketMedian: number;
-  askAmount: number;
+  askAmount?: number;
   tone: "polite" | "professional" | "aggressive";
 }
 
@@ -196,7 +196,11 @@ const TONE_PHRASES = {
 };
 
 export function generateNegotiationScript(context: ScriptContext): { subject: string; body: string } {
-  const { tone, jobTitle, companyName, yearsExperience, currentOffer, marketMedian, askAmount } = context;
+  const { tone, jobTitle, companyName, yearsExperience, currentOffer, marketMedian } = context;
+  
+  // Calculate ask amount if not provided - suggest 10-15% above market median
+  const askAmount = context.askAmount || Math.round(Math.max(marketMedian * 1.1, currentOffer * 1.1));
+  
   const phrases = {
     opening: TONE_PHRASES.opening[tone],
     transition: TONE_PHRASES.transition[tone],
