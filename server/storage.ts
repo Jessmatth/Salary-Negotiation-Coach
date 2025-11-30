@@ -2,10 +2,12 @@ import {
   compensationRecords, 
   offerEvaluations,
   quizResponses,
+  userFeedback,
   type CompensationRecord, 
   type InsertCompensationRecord,
   type QueryCompensation,
   type ScorecardInput,
+  type FeedbackInput,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, like, or, sql, desc, ilike } from "drizzle-orm";
@@ -47,6 +49,9 @@ export interface IStorage {
   
   // Quiz Responses  
   saveQuizResponse(data: any): Promise<any>;
+  
+  // User Feedback
+  saveFeedback(data: FeedbackInput): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -304,6 +309,14 @@ export class DatabaseStorage implements IStorage {
   async saveQuizResponse(data: any): Promise<any> {
     const [saved] = await db
       .insert(quizResponses)
+      .values(data)
+      .returning();
+    return saved;
+  }
+  
+  async saveFeedback(data: FeedbackInput): Promise<any> {
+    const [saved] = await db
+      .insert(userFeedback)
       .values(data)
       .returning();
     return saved;
