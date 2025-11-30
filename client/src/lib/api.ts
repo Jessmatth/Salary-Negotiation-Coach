@@ -7,6 +7,7 @@ import type {
   LeverageResult,
   ScriptInput,
   ScriptResult,
+  FeedbackInput,
 } from "@shared/schema";
 
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
@@ -66,6 +67,17 @@ export function useJobTitleSuggestions(query: string) {
     queryFn: () => fetcher<string[]>(`/api/job-titles?q=${encodeURIComponent(query)}`),
     enabled: query.length >= 2,
     staleTime: 30000,
+  });
+}
+
+// User Feedback API
+export function useFeedback() {
+  return useMutation({
+    mutationFn: (data: FeedbackInput) =>
+      fetcher<{ success: boolean }>("/api/feedback", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   });
 }
 

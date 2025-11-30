@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useScorecard } from "@/lib/api";
+import { useScorecard, useFeedback } from "@/lib/api";
 import { scorecardInputSchema, type ScorecardInput, type ScorecardResult } from "@shared/schema";
-import { ArrowLeft, ArrowRight, TrendingUp, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, TrendingUp, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
 
 const SENIORITY_LEVELS = [
   { value: "Junior", label: "Junior / Entry Level" },
@@ -267,6 +267,21 @@ export default function Scorecard() {
 
 function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: () => void }) {
   const [, navigate] = useLocation();
+  const [feedbackGiven, setFeedbackGiven] = useState<boolean | null>(null);
+  const feedback = useFeedback();
+
+  const handleFeedback = async (isPositive: boolean) => {
+    try {
+      await feedback.mutateAsync({
+        sessionId: result.sessionId,
+        featureType: "scorecard",
+        isPositive,
+      });
+      setFeedbackGiven(isPositive);
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    }
+  };
 
   const getZoneColor = (zone: string) => {
     switch (zone) {
@@ -419,6 +434,40 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
                 ) : (
                   <>Limited data for this role. Showing general market estimates.</>
                 )}
+              </div>
+
+              <div className="border-t border-slate-700 pt-4">
+                <div className="flex items-center justify-center gap-4">
+                  <span className="text-slate-400 text-sm">Was this helpful?</span>
+                  {feedbackGiven === null ? (
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleFeedback(true)}
+                        disabled={feedback.isPending}
+                        className="text-slate-400 hover:text-emerald-400 hover:bg-emerald-400/10"
+                        data-testid="button-feedback-positive"
+                      >
+                        <ThumbsUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleFeedback(false)}
+                        disabled={feedback.isPending}
+                        className="text-slate-400 hover:text-red-400 hover:bg-red-400/10"
+                        data-testid="button-feedback-negative"
+                      >
+                        <ThumbsDown className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className={`text-sm ${feedbackGiven ? "text-emerald-400" : "text-red-400"}`} data-testid="text-feedback-thanks">
+                      Thanks for your feedback!
+                    </span>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
