@@ -413,8 +413,12 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
                 </span>
               </div>
 
-              <div className="text-center text-slate-500 text-sm mb-6">
-                Based on {result.sampleSize.toLocaleString()} comparable records ({Math.round(result.confidence * 100)}% confidence)
+              <div className="text-center text-slate-500 text-sm mb-6" data-testid="text-sample-info">
+                {result.sampleSize > 0 ? (
+                  <>Based on {result.sampleSize.toLocaleString()} comparable records ({Math.round(result.confidence * 100)}% confidence)</>
+                ) : (
+                  <>Limited data for this role. Showing general market estimates.</>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -131,82 +131,101 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getMarketRange(input: ScorecardInput): Promise<MarketRange> {
-    // Build conditions for finding comparable salaries
-    const conditions = [];
+    // Strategy: Try progressively broader searches until we get enough data
+    // 1. Exact title match + location
+    // 2. Fuzzy title match + location  
+    // 3. Fuzzy title match only
+    // 4. Fallback with low confidence
     
-    // Match job title (fuzzy)
     const titleWords = input.jobTitle.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+    
+    // Extract state from location
+    let stateCode: string | null = null;
+    if (!input.isRemote && input.location) {
+      const stateMatch = input.location.match(/\b([A-Z]{2})\b/);
+      if (stateMatch) {
+        stateCode = stateMatch[1];
+      }
+    }
+    
+    // Helper to run percentile query
+    const runQuery = async (conditions: any[]) => {
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const [result] = await db
+        .select({
+          min: sql<number>`COALESCE(percentile_cont(0.10) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
+          p25: sql<number>`COALESCE(percentile_cont(0.25) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
+          median: sql<number>`COALESCE(percentile_cont(0.50) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
+          p75: sql<number>`COALESCE(percentile_cont(0.75) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
+          max: sql<number>`COALESCE(percentile_cont(0.90) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
+          sampleSize: sql<number>`count(*)::int`,
+        })
+        .from(compensationRecords)
+        .where(whereClause);
+      return result;
+    };
+    
+    // Try 1: Fuzzy title match with location
+    if (titleWords.length > 0 && stateCode) {
+      const titleConditions = titleWords.map(word => 
+        ilike(compensationRecords.jobTitle, `%${word}%`)
+      );
+      const result = await runQuery([
+        or(...titleConditions),
+        eq(compensationRecords.state, stateCode)
+      ]);
+      
+      if (result && result.sampleSize >= 5) {
+        // Strong match: title + location
+        const confidence = Math.min(0.95, 0.7 + (result.sampleSize / 200) * 0.25);
+        return { ...result, confidence };
+      }
+    }
+    
+    // Try 2: Fuzzy title match only (no location filter)
     if (titleWords.length > 0) {
       const titleConditions = titleWords.map(word => 
         ilike(compensationRecords.jobTitle, `%${word}%`)
       );
-      conditions.push(or(...titleConditions));
-    }
-    
-    // Match state/location if not remote
-    if (!input.isRemote && input.location) {
-      const stateMatch = input.location.match(/\b([A-Z]{2})\b/);
-      if (stateMatch) {
-        conditions.push(eq(compensationRecords.state, stateMatch[1]));
+      const result = await runQuery([or(...titleConditions)]);
+      
+      if (result && result.sampleSize >= 3) {
+        // Medium match: title only
+        const confidence = Math.min(0.85, 0.5 + (result.sampleSize / 300) * 0.35);
+        return { ...result, confidence };
       }
     }
     
-    // Experience range (within 3 years)
-    const expMin = Math.max(0, input.yearsExperience - 3);
-    const expMax = input.yearsExperience + 3;
-    conditions.push(gte(compensationRecords.minYearsExperience, expMin));
-    conditions.push(lte(compensationRecords.minYearsExperience, expMax));
+    // Try 3: Exact job title match (case insensitive)
+    const exactResult = await runQuery([
+      ilike(compensationRecords.jobTitle, input.jobTitle)
+    ]);
     
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-    
-    // Get percentile data
-    const [result] = await db
-      .select({
-        min: sql<number>`COALESCE(percentile_cont(0.10) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
-        p25: sql<number>`COALESCE(percentile_cont(0.25) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
-        median: sql<number>`COALESCE(percentile_cont(0.50) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
-        p75: sql<number>`COALESCE(percentile_cont(0.75) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
-        max: sql<number>`COALESCE(percentile_cont(0.90) within group (order by ${compensationRecords.baseSalaryMedian})::int, 0)`,
-        sampleSize: sql<number>`count(*)::int`,
-      })
-      .from(compensationRecords)
-      .where(whereClause);
-    
-    // If no matches found, try broader search
-    if (!result || result.sampleSize === 0) {
-      const [broadResult] = await db
-        .select({
-          min: sql<number>`COALESCE(percentile_cont(0.10) within group (order by ${compensationRecords.baseSalaryMedian})::int, 70000)`,
-          p25: sql<number>`COALESCE(percentile_cont(0.25) within group (order by ${compensationRecords.baseSalaryMedian})::int, 85000)`,
-          median: sql<number>`COALESCE(percentile_cont(0.50) within group (order by ${compensationRecords.baseSalaryMedian})::int, 100000)`,
-          p75: sql<number>`COALESCE(percentile_cont(0.75) within group (order by ${compensationRecords.baseSalaryMedian})::int, 130000)`,
-          max: sql<number>`COALESCE(percentile_cont(0.90) within group (order by ${compensationRecords.baseSalaryMedian})::int, 175000)`,
-          sampleSize: sql<number>`count(*)::int`,
-        })
-        .from(compensationRecords);
-      
-      return {
-        min: broadResult?.min || 70000,
-        p25: broadResult?.p25 || 85000,
-        median: broadResult?.median || 100000,
-        p75: broadResult?.p75 || 130000,
-        max: broadResult?.max || 175000,
-        sampleSize: broadResult?.sampleSize || 100,
-        confidence: 0.5, // Lower confidence for broad match
-      };
+    if (exactResult && exactResult.sampleSize >= 1) {
+      const confidence = Math.min(0.9, 0.6 + (exactResult.sampleSize / 100) * 0.3);
+      return { ...exactResult, confidence };
     }
     
-    // Calculate confidence based on sample size
-    const confidence = Math.min(0.95, 0.5 + (result.sampleSize / 1000) * 0.45);
+    // Fallback: No matching data found
+    // Return general market data with very low confidence and sample size of 0
+    const [broadResult] = await db
+      .select({
+        min: sql<number>`COALESCE(percentile_cont(0.10) within group (order by ${compensationRecords.baseSalaryMedian})::int, 70000)`,
+        p25: sql<number>`COALESCE(percentile_cont(0.25) within group (order by ${compensationRecords.baseSalaryMedian})::int, 85000)`,
+        median: sql<number>`COALESCE(percentile_cont(0.50) within group (order by ${compensationRecords.baseSalaryMedian})::int, 100000)`,
+        p75: sql<number>`COALESCE(percentile_cont(0.75) within group (order by ${compensationRecords.baseSalaryMedian})::int, 130000)`,
+        max: sql<number>`COALESCE(percentile_cont(0.90) within group (order by ${compensationRecords.baseSalaryMedian})::int, 175000)`,
+      })
+      .from(compensationRecords);
     
     return {
-      min: result.min,
-      p25: result.p25,
-      median: result.median,
-      p75: result.p75,
-      max: result.max,
-      sampleSize: result.sampleSize,
-      confidence,
+      min: broadResult?.min || 70000,
+      p25: broadResult?.p25 || 85000,
+      median: broadResult?.median || 100000,
+      p75: broadResult?.p75 || 130000,
+      max: broadResult?.max || 175000,
+      sampleSize: 0, // No specific matches found
+      confidence: 0.2, // Very low confidence for fallback
     };
   }
   
