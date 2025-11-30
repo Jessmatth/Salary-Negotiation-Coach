@@ -1,6 +1,8 @@
 # Salary Negotiation Coach
 
-A web application that helps professionals evaluate job offers and negotiate confidently using real market data.
+💸 **Transform Uncertainty into Actionable Confidence**
+
+The Salary Negotiation Coach is a targeted application designed to empower job seekers by providing data-backed salary assessment and AI-generated, tone-adjusted negotiation scripts. Our core mission is to eliminate the anxiety and guesswork involved in responding to a job offer, ensuring users receive compensation commensurate with their market value.
 
 ## Features
 
