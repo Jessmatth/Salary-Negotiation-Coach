@@ -1,0 +1,639 @@
+The Salary Negotiation Coach is a web/mobile app that gives professionals fast, confident answers to three questions: Am I underpaid? → What should I say? → How hard can I push? The “Minimum Viable Negotiator” bundles three core features—a lowball scorecard, a tone-adjustable script generator, and a leverage quiz—into a simple flow that takes a user from anxiety and guesswork to a specific plan of action in minutes.
+Below are detailed user stories for each feature, including how they’re accessed, used, and what the user sees.
+
+1. “Is this a Good Offer?” Scorecard
+1.1 Entry & Discovery
+US 1.1 – Home Entry Point
+As a job candidate who just received an offer
+
+
+I want a clear “Is this a Good Offer?” CTA on the home screen
+
+
+So that I can quickly see whether my offer is fair before worrying about negotiation tactics.
+
+
+Behavior / UI
+Home screen shows a primary card:
+
+
+Title: “Is this a Good Offer?”
+
+
+Subtitle: “Find out in under 60 seconds.”
+
+
+Button: “Check My Offer”
+
+
+Tapping opens the Scorecard Intake screen.
+
+
+
+1.2 Offer Intake (including Years of Experience & Company Name)
+US 1.2 – Offer Input Form
+As a user comparing an offer
+
+
+I want a short, guided form that captures my role, experience, company, location, and offer details
+
+
+So that the app can give me a more accurate and personalized Good Offer assessment.
+
+
+Behavior / UI
+Scorecard Intake fields:
+Job Title (autocomplete)
+
+
+Company Name making the offer (free text with “e.g., Google, Stripe, Series B startup”)
+
+
+Years of Experience (numeric or dropdown: 0–1, 2–4, 5–7, 8–10, 10+)
+
+
+Level / Seniority (Junior / Mid / Senior / Lead / Director / VP, etc.)
+
+
+Location (city / region / remote)
+
+
+Base Salary Offered
+
+
+Bonus / Target Bonus % (optional)
+
+
+Equity / Stock Details (optional short field)
+
+
+Additional behavior:
+Simple helper text under key fields (e.g., “We use your years of experience and company to better estimate market range.”)
+
+
+Progress hint at the top: “Step 1 of 2: Offer Details”
+
+
+Primary button at bottom: “Calculate My Score”
+
+
+The Company Name and Years of Experience are stored and later reused in the Script Generator (“Senior PM, 7 years, offer from Stripe”) and can be used to fine-tune benchmark ranges.
+
+1.3 Viewing “Good Offer” Result
+US 1.3 – Scorecard Result & Gauge
+As a user who submitted my offer
+
+
+I want a clear visual answer and a concise explanation
+
+
+So that I immediately know if negotiation is worth pursuing.
+
+
+Behavior / UI
+Scorecard Result screen:
+Gauge chart (speedometer-style):
+
+
+Zones: “Very Underpaid” → “Fair” → “Above Market”
+
+
+Needle at the user’s position.
+
+
+Headline (examples):
+
+
+“You’re leaving $15,000–$20,000 on the table.”
+
+
+or “You’re within $3,000 of market—this is a fair offer.”
+
+
+Summary list:
+
+
+Your Role & Experience: “Senior PM · 7 years · Company: Stripe”
+
+
+Your Offer: $X
+
+
+Market Range (est.): $Y–$Z
+
+
+Difference: +/– $Δ
+
+
+Short explanation: “Based on your title, years of experience, company type, and location…”
+
+1.4 Next Steps: Quiz & Script
+US 1.4 – Next Step CTAs
+As a user who just learned how my offer compares to market
+
+
+I want a clear choice between personalizing my strategy and jumping straight into a script
+
+
+So that I can either deepen the analysis or act immediately.
+
+
+Behavior / UI
+Below the gauge and summary:
+Primary CTA:
+
+
+“Generate Negotiation Email” → opens Tone-Slider Script Generator with:
+
+
+Role, years of experience, company, offer, and market range pre-populated.
+
+
+Secondary CTA:
+
+
+“Personalize My Strategy” → opens Leverage Quiz.
+
+
+Copy varies by result:
+If underpaid:
+
+
+“You’re under market—let’s fine-tune how hard you can push.”
+
+
+If fair:
+
+
+“This offer is fair—if you negotiate, you’ll want to be thoughtful and measured.”
+
+
+
+2. Leverage Quiz (Contextual Assessment)
+2.1 Entry & Position in Flow
+US 2.1 – Multiple Entry Points
+As a user who wants tailored advice
+
+
+I want to access the Leverage Quiz from onboarding, the Scorecard Result, and the Script Generator
+
+
+So that I can get a 0–100 Leverage Score that customizes the rest of the experience.
+
+
+Behavior / UI
+Onboarding: optional step:
+
+
+Card: “Personalize Your Strategy – Answer 8 quick questions.”
+
+
+Buttons: “Take Leverage Quiz (~30s)” / “Skip for now”.
+
+
+Scorecard Result: secondary CTA “Personalize My Strategy”.
+
+
+Script Generator: small inline link: “Not sure how bold to be? Personalize My Strategy.”
+
+
+All entry points lead to the Leverage Quiz Intro:
+
+
+Text: “We’ll ask 8 questions about your situation to calculate a 0–100 Leverage Score.”
+
+
+Progress bar at 0/8.
+
+
+Button: “Start Quiz”.
+
+
+
+2.2 Single-Question Flow
+US 2.2 – One Question Per Screen
+As a user with limited time
+
+
+I want a clean quiz with one question per screen and a progress bar
+
+
+So that I can see exactly how far along I am and finish quickly.
+
+
+Behavior / UI
+Each quiz screen includes:
+Top: “Question X of 8” + progress bar.
+
+
+Question text in large font.
+
+
+2–4 tappable option cards.
+
+
+Bottom: Back and Next buttons (Next enabled after selecting an option).
+
+
+
+2.3 Questions & Options
+US 2.3 – Capture Leverage Inputs
+As a negotiation coach app
+
+
+I want to ask 8 targeted questions about offers, urgency, skills, employment, pipeline, manager behavior, company health, and willingness to walk
+
+
+So that I can calculate a meaningful leverage score.
+
+
+Behavior / UI
+Questions:
+Other Offers
+
+
+“How many other offers do you currently have?”
+
+
+Options: None / 1 / 2 / 3+
+
+
+Company Urgency
+
+
+“How badly does this company need to fill this role?”
+
+
+Options: They mentioned urgent need / Normal timeline / They said “no rush”
+
+
+Skill Uniqueness
+
+
+“How unique are your skills for this position?”
+
+
+Options: I’m one of many qualified candidates / I have some unique qualifications / I have rare, critical skills
+
+
+Employment Status
+
+
+“What’s your current employment status?”
+
+
+Options: Unemployed / Employed but looking / Employed and happy / Employed with retention offer
+
+
+Pipeline Progress
+
+
+“How far along are you with other companies?”
+
+
+Options: Not interviewing elsewhere / Early stages / Final rounds / Have deadlines approaching
+
+
+Manager Investment
+
+
+“Does the hiring manager seem personally invested?”
+
+
+Options: Very invested (multiple calls, selling me) / Moderately interested / Following standard process
+
+
+Company Financials
+
+
+“How does this company’s financial situation look?”
+
+
+Options: Recent layoffs or struggles / Stable / Growing rapidly with funding
+
+
+Willingness to Walk
+
+
+“How willing are you to walk away?”
+
+
+Options: I need this job / I’d prefer this but have options / I’m genuinely indifferent
+
+
+
+2.4 Leverage Score & Tiers (0–100)
+US 2.4 – Display Leverage Score
+As a user who completed the quiz
+
+
+I want a 0–100 Leverage Score and a simple tier label
+
+
+So that I immediately understand how strong my position is.
+
+
+Behavior / UI
+Leverage Result screen:
+Large numeric score:
+
+
+“Leverage Score: 78 / 100”
+
+
+Tier + tagline:
+
+
+Low Leverage (0–33): “Focus on demonstrating value and building rapport.”
+
+
+Moderate Leverage (34–66): “You have room to negotiate confidently.”
+
+
+High Leverage (67–100): “You’re in the driver’s seat – be bold.”
+
+
+Visual bar: segmented Low / Moderate / High with a marker at the user’s score.
+
+
+
+2.5 Tactical Recommendations (3–5 items)
+US 2.5 – Personalized Tactics
+As a user who knows my leverage
+
+
+I want 3–5 concrete tactical recommendations
+
+
+So that I know exactly how to approach the negotiation, not just how strong my leverage is.
+
+
+Behavior / UI
+Under the score:
+Section title: “Your Tactical Playbook”
+
+
+3–5 bullet recommendations tailored to tier & answers.
+
+
+Example for Low Leverage:
+
+
+Lead with enthusiasm and fit; avoid ultimatums.
+
+
+Keep your ask modest and framed as “bringing the offer closer to market.”
+
+
+Emphasize non-salary improvements (title, scope, flexibility).
+
+
+For Moderate and High, recommendations shift toward firmer anchors, referencing other offers, and leveraging deadlines.
+
+
+
+2.6 Suggested Negotiation Range
+US 2.6 – Percentage Range & Dollar Guidance
+As a user with a specific offer
+
+
+I want a suggested negotiation range (percent and dollars) based on my leverage
+
+
+So that I know whether it’s realistic to ask for 5%, 10%, or 20% more.
+
+
+Behavior / UI
+Suggested Negotiation Range card:
+If offer amount is known (from Scorecard, including role/years/company):
+
+
+Low Leverage (0–33):
+
+
+“Suggested negotiation range: Ask for 5–10% more (approx. $X–$Y).”
+
+
+Moderate Leverage (34–66):
+
+
+“Suggested negotiation range: Ask for 10–15% more (approx. $X–$Y).”
+
+
+High Leverage (67–100):
+
+
+“Suggested negotiation range: Go for 15–25% increase (approx. $X–$Y).”
+
+
+If offer isn’t known:
+
+
+Same percentages, no dollar values, plus prompt:
+
+
+“Add your offer details to see exact dollar amounts.”
+
+
+
+2.7 Risk Assessment
+US 2.7 – Risk Guidance
+As a cautious user
+
+
+I want a risk assessment based on my leverage and context
+
+
+So that I understand the chance that pushing could cause an offer withdrawal or damage the relationship.
+
+
+Behavior / UI
+Risk Assessment section:
+Low Leverage:
+
+
+“Risk Assessment: Proceed carefully. There is increased risk of pushback. Keep your ask modest, collaborative, and framed around mutual fit.”
+
+
+Moderate Leverage:
+
+
+“Risk Assessment: Low to moderate risk. A reasonable, well-framed ask is unlikely to jeopardize the offer.”
+
+
+High Leverage:
+
+
+“Risk Assessment: Low risk of offer withdrawal. You’re in high demand; the main risk is misalignment on expectations—be respectful and clear.”
+
+
+
+2.8 Links to Script Templates
+US 2.8 – Script Templates by Leverage Level
+As a user who now understands my leverage
+
+
+I want script templates pre-adjusted to my leverage level
+
+
+So that my tone and ask match my actual position.
+
+
+Behavior / UI
+Bottom of Leverage Result:
+Primary button varies by tier:
+
+
+Low → “View Gentle Script Templates”
+
+
+Moderate → “View Confident Script Templates”
+
+
+High → “View Bold Script Templates”
+
+
+Tapping opens Tone-Slider Script Generator with:
+
+
+Default tone set (Polite / Firm / Bold).
+
+
+Ask size aligned to the suggested negotiation range.
+
+
+Context pill like:
+
+
+“Senior PM · 7 years · Offer from Stripe · Leverage: High (78/100)”
+
+
+Secondary link:
+“Re-check if you’re being lowballed” → back to Scorecard.
+
+
+
+3. “Tone-Slider” Script Generator
+3.1 Access & Context
+US 3.1 – Access from Scorecard and Quiz
+As a user who just learned my market position and leverage
+
+
+I want to generate a script that already reflects my role, experience, and company
+
+
+So that I don’t have to start from a blank page.
+
+
+Behavior / UI
+Entry points:
+
+
+From Scorecard Result: “Generate Negotiation Email”
+
+
+From Leverage Result: tier-specific button (“Gentle/Confident/Bold Script Templates”)
+
+
+Script Generator top context pill:
+
+
+“Senior PM · 7 years · Offer from Stripe · SF · Offer: $165k · Market: $180–195k · Leverage: High (78/100)”
+
+
+
+3.2 Tone Slider
+US 3.2 – Adjust Tone Without Rewriting
+As a user unsure how assertive to be
+
+
+I want a “Polite → Aggressive” tone slider
+
+
+So that I can adjust how the script sounds without rewriting it.
+
+
+Behavior / UI
+Tone slider at top:
+
+
+Left label: “Polite”
+
+
+Middle label: “Professional / Firm”
+
+
+Right label: “Aggressive”
+
+
+Default position:
+
+
+Low Leverage → near “Polite”
+
+
+Moderate → middle
+
+
+High → closer to “Aggressive”
+
+
+Below slider: editable script text box.
+
+
+As slider moves, phrasing updates:
+
+
+Polite: “Would it be possible to explore…”
+
+
+Aggressive: “Given my experience and market data, I expect…”
+
+
+
+3.3 Editing & Sending
+US 3.3 – Manual Edits
+As a user with my own style
+
+
+I want to freely edit the generated script
+
+
+So that it feels natural and authentic.
+
+
+Behavior / UI
+Script appears in a multi-line editable text area.
+
+
+User can modify language, add specifics, remove lines.
+
+
+Slider adjustments nudge phrases but aim not to completely erase manual edits.
+
+
+US 3.4 – Copy & Email
+As a user ready to act
+
+
+I want one-tap options to copy or send the script
+
+
+So that I can quickly move into my real email client.
+
+
+Behavior / UI
+Buttons under the script:
+
+
+“Copy Script” → copies text, shows “Copied!” toast.
+
+
+“Open Email Draft” → opens default mail app with:
+
+
+Subject: “Regarding my offer”
+
+
+Body: the current script text.
+
