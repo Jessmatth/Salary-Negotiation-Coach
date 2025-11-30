@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useSearch } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -20,24 +20,37 @@ const TONE_LABELS = {
 } as const;
 
 export default function Scripts() {
+  const searchString = useSearch();
   const [script, setScript] = useState<ScriptResult | null>(null);
   const [editedBody, setEditedBody] = useState("");
   const [copied, setCopied] = useState(false);
   const [tone, setTone] = useState<"polite" | "professional" | "aggressive">("professional");
   const scriptGenerator = useScriptGenerator();
 
+  const getDefaultValues = () => {
+    const params = new URLSearchParams(searchString);
+    return {
+      jobTitle: params.get("jobTitle") || "",
+      companyName: params.get("companyName") || "",
+      yearsExperience: params.get("yearsExperience") ? Number(params.get("yearsExperience")) : 5,
+      location: params.get("location") || "",
+      currentOffer: params.get("currentOffer") ? Number(params.get("currentOffer")) : 100000,
+      marketMedian: params.get("marketMedian") ? Number(params.get("marketMedian")) : 120000,
+      askAmount: undefined,
+    };
+  };
+
   const form = useForm<Omit<ScriptInput, "tone">>({
     resolver: zodResolver(scriptInputSchema.omit({ tone: true })),
-    defaultValues: {
-      jobTitle: "",
-      companyName: "",
-      yearsExperience: 5,
-      location: "",
-      currentOffer: 100000,
-      marketMedian: 120000,
-      askAmount: undefined,
-    },
+    defaultValues: getDefaultValues(),
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    if (params.get("jobTitle")) {
+      form.reset(getDefaultValues());
+    }
+  }, [searchString]);
 
   const onSubmit = async (data: Omit<ScriptInput, "tone">) => {
     try {

@@ -430,7 +430,17 @@ function ScorecardResult({ result, onBack }: { result: ScorecardResult; onBack: 
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
             <Button
-              onClick={() => navigate("/scripts")}
+              onClick={() => {
+                const params = new URLSearchParams({
+                  jobTitle: result.input.jobTitle,
+                  companyName: result.input.companyName || "",
+                  yearsExperience: String(result.input.yearsExperience),
+                  location: result.input.location,
+                  currentOffer: String(result.input.baseSalaryOffered),
+                  marketMedian: String(result.marketRange.median),
+                });
+                navigate(`/scripts?${params.toString()}`);
+              }}
               size="lg"
               variant="outline"
               className="flex-1 border-slate-600 text-slate-200 hover:bg-slate-800"
